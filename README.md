@@ -1,14 +1,9 @@
 # Modernisation de l'ODH
 
-
-
 ## Logiciels prérequis
-
 - pgAdmin (Version 4)
 - Anaconda
-- ArcGIS Portal
 - ArcGIS Pro
-
 
 ## Besoins fonctionnels
 
