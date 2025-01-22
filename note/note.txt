@@ -1,0 +1,18 @@
+- NaN -> 'NULL'
+- Si la MDDP veut se remettre dans le projet : expliquer comment faire une vue temporelle en SQL
+
+*guide
+- expliquer choix 
+- expliquer classe/fonctions
+- écrire des phrases
+- id_versement ?
+- expliquer objectid
+- select max_id dans la table elle-même
+- sécurité: verser seulement les fichiers CSV tables
+- comment recréer des vues à partir des 4 tables
+ - simple (recréation de la table)
+ - moins simple (jointure)
+ - encore moins simple (temporelle)
+- suppression versement/table/vue
+
+tester passage tables publiées en prod
