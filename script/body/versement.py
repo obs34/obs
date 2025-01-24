@@ -49,21 +49,10 @@ class Versement:
             for ligne in df.itertuples(index=False, name=None)
         ]
         if values: # Si la table est non vide.
-            # Insertion des données dans la table
-            if(len(values[0])==5): 
-                # https://stackoverflow.com/questions/32071536/typeerror-sequence-item-0-expected-str-instance-bytes-found
-                args_str = b','.join(cur.mogrify("(%s,%s,%s,%s,%s)", x) for x in values)
-                # https://stackoverflow.com/questions/55033372/can-only-concatenate-str-not-bytes-to-str
-                cur.execute(f"INSERT INTO {nom_table} VALUES " + args_str.decode())
-            if(len(values[0])==6): 
-                args_str = b','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s)", x) for x in values)
-                cur.execute(f"INSERT INTO {nom_table} VALUES " + args_str.decode())
-            if(len(values[0])==8): 
-                args_str = b','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s)", x) for x in values)
-                cur.execute(f"INSERT INTO {nom_table} VALUES " + args_str.decode())
-            if(len(values[0])==9): 
-                args_str = b','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s)", x) for x in values)
-                cur.execute(f"INSERT INTO {nom_table} VALUES " + args_str.decode())
+            # Créer des valeurs dynamiques pour la requête INSERT
+            placeholder = f"({','.join(['%s'] * len(values[0]))})"
+            args_str = b','.join(cursor.mogrify(placeholder, row) for row in values)
+            cursor.execute(f"INSERT INTO {table_name} VALUES {args_str.decode()}")
 
     @combien_de_temps
     def versement(self):
