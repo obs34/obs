@@ -51,8 +51,8 @@ class Versement:
         if values: # Si la table est non vide.
             # Créer des valeurs dynamiques pour la requête INSERT
             placeholder = f"({','.join(['%s'] * len(values[0]))})"
-            args_str = b','.join(cursor.mogrify(placeholder, row) for row in values)
-            cursor.execute(f"INSERT INTO {table_name} VALUES {args_str.decode()}")
+            args_str = b','.join(cur.mogrify(placeholder, row) for row in values)
+            cur.execute(f"INSERT INTO {nom_table} VALUES {args_str.decode()}")
 
     @combien_de_temps
     def versement(self):
