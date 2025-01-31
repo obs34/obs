@@ -172,3 +172,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# dossiers
+/data
+/Notebook/traitement*
