@@ -61,7 +61,27 @@ class ConnectionBaseDeDonnees:
                     'port': "5441",
                     'schema': "test_obs"
                 }
-            }
+            },
+            '5': {
+                'name': "Recette ODH",
+                'params': {
+                    'database': "obs",
+                    'user': "hab",
+                    'host': "s1943",
+                    'port': "5432",
+                    'schema': "hab"
+                }
+            },
+            '6': {
+                'name': "Recette test",
+                'params': {
+                    'database': "obs",
+                    'user': "test",
+                    'host': "s1943",
+                    'port': "5432",
+                    'schema': "test"
+                }
+            },
         }
 
         print("Liste des observatoires disponibles :", flush=True)
