@@ -159,7 +159,7 @@ class GestionId:
             processed_data = self.ajout_id_versement(id_versement, processed_data, table, col_id)
 
         # objectid
-        # En faisant l'hypothèse que la colonne 'objectid' créée par ArcGIS soit tout le temps en premier et qu'elle soit nommée 'objectid.
+        # En faisant l'hypothèse que la colonne 'objectid' créée par ArcGIS soit tout le temps en premier et qu'elle soit nommée 'objectid' et qu'elle soit auto-incrémentée en int.
         for table, col_id in [(self.livre.nom_table, self.OBJECTID),
                               (self.livre.nom_table_vers, self.OBJECTID),
                               (self.livre.nom_table_mod, self.OBJECTID),
