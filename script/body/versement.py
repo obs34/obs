@@ -127,22 +127,42 @@ class Versement:
             traceback.print_exc()
             self.db.rollback()
 
-        # try:
-        #     nom_table = self.livre.nom_table
-        #     if not CreationTable.table_exist(self.db, schema, nom_table):
-        #         # Création de la table
-        #         raise NameError
-        #     self.createur_de_table.ajout_contraintes(schema, nom_table)
-        #     print(f"Contraintes de {nom_table} ajoutées.")
-        #     self.db.commit()
-        # except Exception as e:
-        #     print(f"Erreur lors de l'ajout des contraintes : {e}")
-        #     traceback.print_exc()
-        #     self.db.rollback()
+    @combien_de_temps
+    def ajout_contraintes(self, schema, tables):
+        contraintes = [] # CreationTable.recup_contraintes(self.db)
+        # Ajout des clés primaires
+        try:
+            for nom_table in tables:
+                # # Récupère les données
+                # # os.path.basename(csv).split('.')[0] renvoie le nom du fichier sans l'extension
+                # nom_table = os.path.basename(csv).split('.')[0]
+                if not CreationTable.table_exist(self.db, schema, nom_table):
+                    # Création de la table
+                    raise NameError
+                # Liste des contraintes
+                # liste_contraintes = CreationTable.contraintes(schema, nom_table)
+                self.createur_de_table.ajout_contraintes_primaires(schema, nom_table, contraintes)
+                print(f"Contrainte primaire de {nom_table} ajoutée.")
+            self.db.commit()
+        except Exception as e:
+            print(f"Erreur lors de l'ajout des contraintes primaires : {e}")
+            traceback.print_exc()
+            self.db.rollback()
 
-        # finally:
-        #     self.db.close()
-            # Supprime le dossier de variables
-            # shutil.rmtree(self.nom_dossier_vars)
-
-
+        # Ajout des clés secondaires
+        try:
+            # for csv in glob.glob(f"{self.dossier_temporaire}/*.csv"):
+            #     # Récupère les données
+            #     # os.path.basename(csv).split('.')[0] renvoie le nom du fichier sans l'extension
+            #     nom_table = os.path.basename(csv).split('.')[0]
+            if not CreationTable.table_exist(self.db, schema, nom_table):
+                # Création de la table
+                raise NameError
+            nom_table = self.livre.nom_table
+            self.createur_de_table.ajout_contraintes_secondaires(schema, nom_table, contraintes)
+            print(f"Contraintes secondaires de {nom_table} ajoutées.")
+            self.db.commit()
+        except Exception as e:
+            print(f"Erreur lors de l'ajout des contraintes secondaires : {e}")
+            traceback.print_exc()
+            self.db.rollback()
