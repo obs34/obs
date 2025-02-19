@@ -8,18 +8,18 @@ import shutil
 
 class GestionDossier():
     def __init__(self, livre):
-        # self.file_path = file_path
         self.livre = livre
 
-    def create_file(self):
+    def create_folder(self):
         date_heure = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         self.dossier_temporaire = self.livre.PREFIXE_DOSSIER_TEMPORAIRE + date_heure
 
         os.mkdir(self.dossier_temporaire)
-        print('Fichiers vars temporaires créés. Son nom est :', self.dossier_temporaire)
+        print(f"Dossier traitement temporaire **{self.dossier_temporaire}** créé")
+        print("Tous les fichiers csv vont être créés dans ce dossier.")
 
-    def delete_file(self):
-        '''Supprime les fichiers temporaire.'''
+    def delete_folder(self):
+        '''Supprime les dossiers temporaire.'''
 
         choix = input('Voulez-vous supprimer tous les dossiers commençant par {self.livre.PREFIXE_DOSSIER_TEMPORAIRE} ? (O/N) ').upper()
         if choix == 'O':
@@ -35,12 +35,12 @@ class GestionDossier():
                 shutil.rmtree(dossier)
                 print(f"Le dossier {dossier} a été supprimé.")
             except OSError as e:
-                print("Error: %s - %s." % (e.filename, e.strerror))
+                print("Error: %s - %s." % (e.foldername, e.strerror))
 
     def processed_data_to_csv(self, processed_data: dict[str, pd.DataFrame]):
         '''Enregistre les données traitées dans un fichier CSV.'''
 
         for nom_table, df in processed_data.items():
             df.to_csv(f'{self.dossier_temporaire}/{nom_table}.csv', index=False)
-            print(f"{nom_table}.csv a été créé dans le dossier {self.dossier_temporaire}.")
+            print(f"{nom_table}.csv créé.")
         
