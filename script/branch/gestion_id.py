@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 from .gestion_table import CreationTable
 
@@ -84,22 +84,21 @@ class GestionId:
         max_id = self.select_max_id(col_id, nom_table)
         return self.ajout_id_manquant(max_id, processed_data, nom_table, col_id), id_nom_pg
 
-    def presence_objectid(self, nom_table: str) -> bool: #tuple[bool, list]
+    def presence_objectid(self, nom_table: str) -> Union[int,bool]:
         """
         Vérifie si la colonne 'objectid' est présente dans la table.
-        Retourne un tuple (presence, resultat).
+        Retourne l'index de 'objectid' si il est présent, False sinon.
         """
         if CreationTable.table_exist(self.db, self.livre.schema, nom_table):
                 query = f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='{nom_table}'"
                 resultat = [tup[0] for tup in self._execute_query(query)]
-                # presence = len(resultat) != 0
-                presence = True if self.OBJECTID in resultat else False
+                presence = resultat.index(self.OBJECTID) if self.OBJECTID in resultat else False
                 return presence
         else:
-            # Si la table n'existe pas, retourne False et une liste vide.
-            return False #, []
+            # Si la table n'existe pas, retourne False
+            return False
 
-    def max_objectid(self, nom_table: str) -> int:
+    def max_objectid(self, nom_table: str) -> tuple[int,int]:
         """
         Retourne la valeur maximale de la colonne 'objectid' si elle existe,
         sinon lève une exception ou retourne None.
@@ -108,13 +107,13 @@ class GestionId:
         if presence:
             try:
                 query = f"SELECT max({self.OBJECTID}) FROM {self.livre.schema}.{nom_table}"
-                resultat = self._execute_query(query)[0]
-                return resultat
+                resultat = self._execute_query(query)[0][0]
+                return (presence, resultat)
             except Exception as e:
-                print(f"Erreur dans max_objectid : {e}")
+                print(f"Erreur dans max_objectid() : {e}")
                 return None
 
-    def ajout_objectid(self, max_objectid_value: int, processed_data: Dict[str, pd.DataFrame], nom_table: str):
+    def ajout_objectid(self, object_id: tuple[int,int], processed_data: Dict[str, pd.DataFrame], nom_table: str):
         '''
         Ajoute en première colonne la colonne 'objectid' qui est un autoincrémenté en integer
         et créé par ArcGIS par le géotraitement arcpy.TableToGeodatabase_conversion().
@@ -123,9 +122,13 @@ class GestionId:
         On n'ajoute la colonne objectid que si la table dans laquelle on veut verser le Pandas a déjà cette colonne.
         '''
         df = processed_data[nom_table]
-        if len(df)>0: # S'il y a des nouvelles modalités/variables, sinon ça créer une colonne 'objectid' vide.
-            df[self.OBJECTID] = np.arange(df.shape[0]) + max_objectid_value + 1
-            df = df[[self.OBJECTID] + [col for col in df.columns if col != self.OBJECTID]]
+        index_objectid, max_objectid_value = object_id
+        if len(df)>0: # Pour les tables mod et var, sinon ça créer une colonne 'objectid' vide.
+            df[self.OBJECTID] = np.arange(df.shape[0]) + max_objectid_value + 1 # Créer la colonne 'objectid' en dernier
+            # Place 'objectid en fonction de son index
+            l = list(df.columns)
+            l.insert(index_objectid, l.pop(l.index(self.OBJECTID))) # note : pop renvoie la valeur supprimée
+            df = df[[col for col in l]]
             processed_data[nom_table] = df
         return processed_data
     
@@ -164,9 +167,9 @@ class GestionId:
                               (self.livre.nom_table_vers, self.OBJECTID),
                               (self.livre.nom_table_mod, self.OBJECTID),
                               (self.livre.nom_table_var, self.OBJECTID)]:
-            max_objectid_value = None
-            max_objectid_value = self.max_objectid(table)
-            if max_objectid_value:
-                processed_data = self.ajout_objectid(max_objectid_value, processed_data, table)
+            object_id = None
+            object_id = self.max_objectid(table)
+            if object_id:
+                processed_data = self.ajout_objectid(object_id, processed_data, table)
 
         return processed_data
