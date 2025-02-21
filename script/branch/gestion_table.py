@@ -92,7 +92,7 @@ SELECT conname FROM pg_constraint
         """
         # Récupère les clés étrangères associées à la table, si elle est la table principale du livre
         cles_etrangeres = self.livre.relations['etrangere']
-        print(f"cles_etrangeres:{cles_etrangeres}")
+
         for table_referente, (cle_etrangere_referente, cle_etrangere_maison) in cles_etrangeres.items():
             # Nom de la contrainte étrangère
             nom_contrainte_secondaire = f"{table}_{cle_etrangere_maison}_fk"
