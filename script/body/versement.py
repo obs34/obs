@@ -1,8 +1,10 @@
 """Module de versement des données."""
 import glob
 import os
+import psycopg2
 import pandas as pd
 import traceback
+from IPython.display import clear_output
 from ..branch.lecteur_excel_csv import LecteurExcelCsv
 from ..branch.gestion_table import CreationTable
 from ..leaf.futile import *
@@ -25,21 +27,33 @@ class Versement:
         self.lecteur = LecteurExcelCsv()
         self.createur_de_table = CreationTable(self.db, self.livre)
 
-    def save_to_database(self, df: pd.DataFrame, nom_table: str):
+    def save_to_database(self, df: pd.DataFrame, nom_table: str, ignore=False):
         """
         Insère les données du DataFrame dans la table spécifiée.
         """
-        if df.empty:
-            return
+        # if df.empty:
+        #     print(f"Le DataFrame est vide pour {nom_table}.")
+        #     return
         
         cur = self.db.cursor()
 
         values = [tuple(None if pd.isna(val) else val for val in ligne) for ligne in df.itertuples(index=False, name=None)] # df.itertuples(index=False, name=None) pour que pgAdmin reconnaisse que ce sont dans valeurs NULL
-
-        # Créer des valeurs dynamiques pour la requête INSERT
         placeholder = f"({','.join(['%s'] * len(values[0]))})"
-        args_str = b','.join(cur.mogrify(placeholder, row) for row in values)
-        cur.execute(f"INSERT INTO {nom_table} VALUES {args_str.decode()}")
+        args_str = b','.join(cur.mogrify(placeholder, row) for row in values) # b pour bytes (octets) à la place de str
+
+        fin = 'ON CONFLICT DO NOTHING' if ignore else ''
+        requete = f"INSERT INTO {nom_table} VALUES {args_str.decode()} {fin};"
+
+        try:
+            cur.execute("SAVEPOINT before_insert")  # Crée un point de sauvegarde
+            cur.execute(requete)
+        except psycopg2.errors.UniqueViolation as e:
+            # print(f"Erreur : Violation de clé primaire détectée dans {nom_table} : {e}")
+            # self.db.rollback()  # IMPORTANT : Annule toute la transaction avant de demander quoi faire
+            # raise  # Propage l'erreur pour qu'elle soit capturée ailleurs
+            cur.execute("ROLLBACK TO SAVEPOINT before_insert")  # Annule seulement cette insertion
+            return False  # Indique un problème
+        return True  # Indique que tout s'est bien passé
 
     def ajout_contraintes(self, schema, tables):
         """
@@ -50,11 +64,12 @@ class Versement:
 
             for table in tables:
                 if CreationTable.table_exist(self.db, schema, table):
-                    self.createur_de_table.ajout_contraintes_primaires(schema, table, contraintes_existantes)
-                    print(f"Contrainte primaire ajoutée pour {table}.")
+                    if self.createur_de_table.ajout_contraintes_primaires(schema, table, contraintes_existantes):
+                        print(f"Contrainte primaire ajoutée pour {table}.")
             
             self.db.commit()
         except Exception as e:
+            clear_output(wait=True)
             print(f"Erreur lors de l'ajout des contraintes primaires : {e}")
             traceback.print_exc()
             self.db.rollback()
@@ -62,11 +77,12 @@ class Versement:
         try:
             nom_table_principale = self.livre.nom_table
             if CreationTable.table_exist(self.db, schema, nom_table_principale):
-                self.createur_de_table.ajout_contraintes_secondaires(schema, nom_table_principale, contraintes_existantes)
-                print(f"Contraintes secondaires ajoutées pour {nom_table_principale}.")
+                if self.createur_de_table.ajout_contraintes_secondaires(schema, nom_table_principale, contraintes_existantes):
+                    print(f"Contraintes secondaires ajoutées pour {nom_table_principale}.")
             
             self.db.commit()
         except Exception as e:
+            clear_output(wait=True)
             print(f"Erreur lors de l'ajout des contraintes secondaires : {e}")
             traceback.print_exc()
             self.db.rollback()
@@ -100,16 +116,38 @@ class Versement:
                     tables_creees.append(nom_table)
                     print(f"Table {nom_table} créée.")
 
-                # Insertion des données
-                self.save_to_database(df, nom_table)
-                print(f"Données de {nom_table} insérées.")
+                try:
+                    # Insertion des données
+                    if not df.empty:
+                        succes = self.save_to_database(df, nom_table)
+                        if succes:
+                            print(f"Données insérées dans {nom_table}.")
+                        if not succes:  # Si une erreur a été détectée
+                            print(f"Il y a des doublons dans {nom_table}.", flush=True)
+                            choix = demander_choix_binaire("Voulez-vous ignorer les doublons et continuer ?")
 
-            self.db.commit()
+                            if choix:
+                                self.save_to_database(df, nom_table, ignore=True)
+                                print(f"Données insérées dans {nom_table} en ignorant les doublons.")
+                            else:
+                                print("Toutes les transactions sont annulées.", flush=True)
+                                self.db.rollback()
+                                return  # Stopper l'exécution
+                    else:
+                        continue
+                except Exception as e:
+                    clear_output(wait=True)
+                    print(f"Erreur critique lors du versement dans {nom_table} : {e}")
+                    self.db.rollback()  # On rollback seulement si c'est une erreur majeure
+                    return  # Stopper l'exécution
+
+            self.db.commit()  # Valide les changements uniquement si tout s'est bien passé
+
         except Exception as e:
-            print(f"Erreur lors du versement des données : {e}")
+            print(f"Erreur globale lors du versement des données : {e}")
             traceback.print_exc()
+            clear_output(wait=True)
             self.db.rollback()
-            return
         
         # Ajout des contraintes après insertion
         self.ajout_contraintes(schema, tables_creees)
