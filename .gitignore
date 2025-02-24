@@ -176,3 +176,4 @@ cython_debug/
 # dossiers
 /data
 /Notebook/traitement*
+/notebook/notebook_test.ipynb
