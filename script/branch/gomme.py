@@ -29,11 +29,18 @@ class Gomme:
         with self.conn.cursor() as cur:
             cur.execute(query)
             return [x[0] for x in cur.fetchall()]
+        
+    def get_id_versement_list(self, table_name):
+        """Récupère la liste des id_versement d'une table'."""
+        query = f"SELECT DISTINCT {self.colnames_vers[0]} FROM {self.schema}.{table_name}"
+        with self.conn.cursor() as cur:
+            cur.execute(query)
+            return [x[0] for x in cur.fetchall()]
 
     def get_var_mod_ids(self, table_name, id_versement:int=None):
         """Récupère les IDs des variables et modalités pour une table donnée."""
         query = f"""
-        SELECT DISTINCT {self.nom_table_var}.{self.colnames_var[0]}, 
+        SELECT DISTINCT {self.nom_table_var}.{self.colnames_var[0]},
                        {self.nom_table_mod}.{self.colnames_mod[0]}
         FROM {self.schema}.{table_name}
         JOIN {self.nom_table_var} ON {table_name}.{self.colnames_var[0]} = {self.nom_table_var}.{self.colnames_var[0]}
@@ -94,6 +101,13 @@ class Gomme:
         other_tables = [t for t in self.get_table_list() if t != table_cible]
         for table in other_tables:
             other_var_ids, other_mod_ids = self.get_var_mod_ids(table)
+            var_ids_to_delete = [v for v in var_ids_to_delete if v not in other_var_ids]
+            mod_ids_to_delete = [m for m in mod_ids_to_delete if m not in other_mod_ids]
+
+        # 2 bis. Vérifier les dépendances dans les autres versements de la table cible
+        other_id_versements = [i for i in self.get_id_versement_list(table_cible) if i != id_versement_cible]
+        for id_versement in other_id_versements:
+            other_var_ids, other_mod_ids = self.get_var_mod_ids(table_cible, id_versement)
             var_ids_to_delete = [v for v in var_ids_to_delete if v not in other_var_ids]
             mod_ids_to_delete = [m for m in mod_ids_to_delete if m not in other_mod_ids]
 
