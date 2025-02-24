@@ -57,8 +57,7 @@ class Traitement():
             print("Données sérialisées.")
             processed = self.gestion_id.set_id(processed)
             print("ID ajoutés.")
-            self.gestion_dossier.create_file()
-            print("Dossier temporaire créé.")
+            self.gestion_dossier.create_folder()
             self.gestion_dossier.processed_data_to_csv(processed)
             print("Données enregistrées.")
         except Exception as e:

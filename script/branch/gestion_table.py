@@ -61,7 +61,7 @@ SELECT conname FROM pg_constraint
         definition_complete = ', '.join(colonnes_types) #  + contraintes
 
         requete_creation = f"CREATE TABLE {schema}.{table} ({definition_complete});"
-        print(requete_creation)
+
         # Étape 5 : Exécution de la requête (sans commit)
         with self.db.cursor() as cur:
             cur.execute(requete_creation)
@@ -84,15 +84,18 @@ SELECT conname FROM pg_constraint
             with self.db.cursor() as cur:
                 cur.execute(contrainte_primaire)
                 contraintes.append(nom_contrainte_primaire)  # Ajoute la contrainte à la liste des contraintes existantes
+            return True
+        return False
 
 
     def ajout_contraintes_secondaires(self, schema: str, table: str, contraintes: list):
         """
         Ajoute des contraintes de clés étrangères à une table, si elles n'existent pas déjà.
         """
+        contrainte_ajoutee = False
         # Récupère les clés étrangères associées à la table, si elle est la table principale du livre
         cles_etrangeres = self.livre.relations['etrangere']
-        print(f"cles_etrangeres:{cles_etrangeres}")
+
         for table_referente, (cle_etrangere_referente, cle_etrangere_maison) in cles_etrangeres.items():
             # Nom de la contrainte étrangère
             nom_contrainte_secondaire = f"{table}_{cle_etrangere_maison}_fk"
@@ -106,9 +109,11 @@ SELECT conname FROM pg_constraint
             )
             # Vérifie si la contrainte n'a pas déjà été ajoutée
             if nom_contrainte_secondaire not in contraintes:
+                contrainte_ajoutee = True
                 with self.db.cursor() as cur:
                     cur.execute(contrainte_secondaire)
                     contraintes.append(nom_contrainte_secondaire)  # Ajoute la contrainte à la liste des contraintes existantes
+        return contrainte_ajoutee
 
     def map_pandas_to_postgres_type(self, dtype, is_empty=False):
         # Dictionnaire des types Pandas vers PostgreSQL
