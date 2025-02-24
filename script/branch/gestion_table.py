@@ -58,11 +58,11 @@ SELECT conname FROM pg_constraint
             for col, is_empty in zip(df.columns, list_empty)
         ]
 
-        definition_complete = ', '.join(colonnes_types) #  + contraintes
+        definition_complete = ', '.join(colonnes_types)
 
         requete_creation = f"CREATE TABLE {schema}.{table} ({definition_complete});"
 
-        # Étape 5 : Exécution de la requête (sans commit)
+        # Étape 2 : Exécution de la requête (sans commit)
         with self.db.cursor() as cur:
             cur.execute(requete_creation)
 

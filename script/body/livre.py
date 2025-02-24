@@ -18,7 +18,7 @@ class Livre:
         self.colnames_mod = ['id_mod', 'nom_mod', 'joli_nom_mod', 'mod_regroupement', 'lib_long_mod']
         self.colnames_vers = ['id_versement', 'nom_table', 'annee', 'echelle', 'theme', 'source', 'commentaire', 'url']
 
-        PREFIXE = 'relations'
+        PREFIXE = 'texte'
         self.nom_table_var = f'{PREFIXE}_{self.schema}_var'.lower()
         self.nom_table_mod = f'{PREFIXE}_{self.schema}_mod'.lower()
         self.nom_table_vers = f'{PREFIXE}_{self.schema}_vers'.lower()

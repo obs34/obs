@@ -47,11 +47,17 @@ class Versement:
         try:
             cur.execute("SAVEPOINT before_insert")  # Crée un point de sauvegarde
             cur.execute(requete)
-        except psycopg2.errors.UniqueViolation as e:
+        except psycopg2.errors.UniqueViolation:
             # print(f"Erreur : Violation de clé primaire détectée dans {nom_table} : {e}")
             # self.db.rollback()  # IMPORTANT : Annule toute la transaction avant de demander quoi faire
             # raise  # Propage l'erreur pour qu'elle soit capturée ailleurs
             cur.execute("ROLLBACK TO SAVEPOINT before_insert")  # Annule seulement cette insertion
+            return "doubons"  # Indique un problème
+        except Exception as e:
+            clear_output(wait=True)
+            print(f"Erreur lors de l'insertion dans {nom_table} : {e}")
+            traceback.print_exc()
+            self.db.rollback()
             return False  # Indique un problème
         return True  # Indique que tout s'est bien passé
 
@@ -120,9 +126,9 @@ class Versement:
                     # Insertion des données
                     if not df.empty:
                         succes = self.save_to_database(df, nom_table)
-                        if succes:
+                        if succes is True:
                             print(f"Données insérées dans {nom_table}.")
-                        if not succes:  # Si une erreur a été détectée
+                        if succes=="doubons":  # Si une erreur a été détectée
                             print(f"Il y a des doublons dans {nom_table}.", flush=True)
                             choix = demander_choix_binaire("Voulez-vous ignorer les doublons et continuer ?")
 
