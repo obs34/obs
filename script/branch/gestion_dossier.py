@@ -9,6 +9,8 @@ from ..leaf.futile import demander_choix_binaire
 class GestionDossier():
     def __init__(self, livre):
         self.livre = livre
+        self.sep = self.livre.sep
+        self.encoding = self.livre.encoding
 
     def create_folder(self):
         date_heure = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -40,6 +42,6 @@ class GestionDossier():
         '''Enregistre les données traitées dans un fichier CSV.'''
 
         for nom_table, df in processed_data.items():
-            df.to_csv(f'{self.dossier_temporaire}/{nom_table}.csv', index=False)
+            df.to_csv(f'{self.dossier_temporaire}/{nom_table}.csv', index=False, sep=self.sep, encoding=self.encoding)
             print(f"{nom_table}.csv créé.")
         

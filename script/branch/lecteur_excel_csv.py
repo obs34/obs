@@ -63,7 +63,7 @@ class LecteurExcelCsv:
         
         return clean_columns
     
-    def read_csv(self, file_path, sep: str = ',') -> pd.DataFrame:
+    def read_csv(self, file_path, sep: str, encoding: str) -> pd.DataFrame:
         """
         Lit un fichier CSV.
         
@@ -74,7 +74,7 @@ class LecteurExcelCsv:
             pd.DataFrame: Données du fichier CSV
         """
         try:
-            return pd.read_csv(file_path, sep=sep, encoding="utf-8-sig")
+            return pd.read_csv(file_path, sep=sep, encoding=encoding)
         except Exception as e:
             print(f"Erreur lors de la lecture du fichier CSV : {e}")
             raise

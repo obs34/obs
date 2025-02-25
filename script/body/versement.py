@@ -113,7 +113,7 @@ class Versement:
             for csv in fichiers_csv:
                 # Récupère les données
                 nom_table = os.path.basename(csv).split('.')[0] # renvoie le nom du fichier sans l'extension
-                df = self.lecteur.read_csv(csv)
+                df = self.lecteur.read_csv(csv, sep=self.livre.sep, encoding=self.livre.encoding)
 
                 # Vérifie si la table existe
                 if not CreationTable.table_exist(self.db, schema, nom_table):
