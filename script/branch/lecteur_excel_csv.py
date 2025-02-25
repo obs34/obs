@@ -27,41 +27,41 @@ class LecteurExcelCsv:
             for sheet_name in excel_file.sheet_names:
                 df = pd.read_excel(excel_file, sheet_name=sheet_name)
                 # Nettoie les noms de colonnes
-                df.columns = self._clean_column_names(df.columns)
+                # df.columns = self._clean_column_names(df.columns)
                 sheets[sheet_name] = df
             return sheets
         except Exception as e:
             print(f"Erreur lors de la lecture du fichier Excel : {e}")
             raise
     
-    @staticmethod # https://docs.python.org/3/library/functions.html#staticmethod
-    def _clean_column_names(columns):
-        """
-        Nettoie les noms des colonnes.
+    # @staticmethod # https://docs.python.org/3/library/functions.html#staticmethod
+    # def _clean_column_names(columns):
+    #     """
+    #     Nettoie les noms des colonnes.
         
-        Args:
-            columns: Liste des noms de colonnes
+    #     Args:
+    #         columns: Liste des noms de colonnes
             
-        Returns:
-            Liste des noms de colonnes nettoyés
-        """
-        replacements = {
-            ' ': '',
-            '+': '_plus_',
-            '-': '_moins_',
-            '<': '_inf_',
-            '>': '_sup_',
-            '=': '_egal_',
-            ':': '_',
-            '(': '',
-            ')': ''
-        }
+    #     Returns:
+    #         Liste des noms de colonnes nettoyés
+    #     """
+    #     replacements = {
+    #         ' ': '_',
+    #         '+': '_plus_',
+    #         '-': '_moins_',
+    #         '<': '_inf_',
+    #         '>': '_sup_',
+    #         '=': '_egal_',
+    #         ':': '_',
+    #         '(': '',
+    #         ')': ''
+    #     }
         
-        clean_columns = columns.copy()
-        for old, new in replacements.items():
-            clean_columns = clean_columns.str.replace(old, new, regex=False)
+    #     clean_columns = columns.copy()
+    #     for old, new in replacements.items():
+    #         clean_columns = clean_columns.str.replace(old, new, regex=False)
         
-        return clean_columns
+    #     return clean_columns
     
     def read_csv(self, file_path, sep: str, encoding: str) -> pd.DataFrame:
         """
