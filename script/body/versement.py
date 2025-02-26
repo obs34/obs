@@ -54,7 +54,7 @@ class Versement:
             cur.execute("ROLLBACK TO SAVEPOINT before_insert")  # Annule seulement cette insertion
             return "doubons"  # Indique un problème
         except Exception as e:
-            clear_output(wait=True)
+            # clear_output(wait=True)
             print(f"Erreur lors de l'insertion dans {nom_table} : {e}")
             traceback.print_exc()
             self.db.rollback()
@@ -75,7 +75,7 @@ class Versement:
             
             self.db.commit()
         except Exception as e:
-            clear_output(wait=True)
+            # clear_output(wait=True)
             print(f"Erreur lors de l'ajout des contraintes primaires : {e}")
             traceback.print_exc()
             self.db.rollback()
@@ -88,7 +88,7 @@ class Versement:
             
             self.db.commit()
         except Exception as e:
-            clear_output(wait=True)
+            # clear_output(wait=True)
             print(f"Erreur lors de l'ajout des contraintes secondaires : {e}")
             traceback.print_exc()
             self.db.rollback()
@@ -142,7 +142,7 @@ class Versement:
                     else:
                         continue
                 except Exception as e:
-                    clear_output(wait=True)
+                    # clear_output(wait=True)
                     print(f"Erreur critique lors du versement dans {nom_table} : {e}")
                     self.db.rollback()  # On rollback seulement si c'est une erreur majeure
                     return  # Stopper l'exécution
@@ -150,7 +150,7 @@ class Versement:
             self.db.commit()  # Valide les changements uniquement si tout s'est bien passé
 
         except Exception as e:
-            clear_output(wait=True)
+            # clear_output(wait=True)
             print(f"Erreur globale lors du versement des données : {e}")
             traceback.print_exc()
             self.db.rollback()

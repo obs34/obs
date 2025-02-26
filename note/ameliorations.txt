@@ -26,3 +26,5 @@ modification des variables et des modalités
 Doublons:
 -ne les accepter seulement pour la table valeur
 -distinguer un versement avec que des oublons ou non
+*****
+Gestion des erreurs dans versement
