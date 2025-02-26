@@ -150,9 +150,9 @@ class Versement:
             self.db.commit()  # Valide les changements uniquement si tout s'est bien passé
 
         except Exception as e:
+            clear_output(wait=True)
             print(f"Erreur globale lors du versement des données : {e}")
             traceback.print_exc()
-            clear_output(wait=True)
             self.db.rollback()
         
         # Ajout des contraintes après insertion

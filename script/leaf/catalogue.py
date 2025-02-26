@@ -67,7 +67,7 @@ class Catalogue:
                     order by id_var, id_mod;
                     """
                 else:
-                    print("""“Il faut choisir, mourir ou mentir.” - Louis-Ferdinand Céline\n Houla, choisir une table suffira dans un premier temps. """)
+                    print("""“Ne pas choisir, c'est encore choisir.” - Jean-Paul Sartre\n Ouais ok JP mais là il faut choisir. """)
         else:
             requete_sql = f"""
             select *

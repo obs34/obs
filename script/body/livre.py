@@ -5,7 +5,7 @@ class Livre:
     '''Classe contenant les informations sur le livre de données.'''
     def __init__(self, conn, theme: str, base: str, source: str, annee: int, schema: str):
         
-        self.sep = ';'
+        self.sep = ','
         self.encoding = 'utf-8-sig'
 
         self.conn = conn
