@@ -1,5 +1,5 @@
 from IPython.display import clear_output
-
+import time
 from ..leaf.futile import *
 
 class Gomme:
@@ -127,6 +127,7 @@ class Gomme:
             str_queries += '\n'
             str_queries += query
         print(f"Liste des requêtes:\n{str_queries}", flush=True) # flush=True force l'affichage immédiat de la sortie
+        time.sleep(1)
         confirmation = demander_choix_binaire(f"Souhaitez-vous supprimer la table/versement ?\n")
         if confirmation:
             self.execute_transaction(queries)

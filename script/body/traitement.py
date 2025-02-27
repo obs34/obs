@@ -6,8 +6,9 @@ from ..branch.serialiseur import SerialiseurDeDonnees
 from ..branch.gestion_id import GestionId
 from ..branch.gestion_dossier import GestionDossier
 from ..branch.lecteur_excel_csv import LecteurExcelCsv
-from ..leaf.futile import *
 from ..body.livre import Livre
+from ..leaf.futile import *
+
 
 class Traitement():
     """Gère le traitement des données."""

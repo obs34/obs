@@ -139,8 +139,35 @@ class SerialiseurDeDonnees:
         Returns:
             Texte nettoyé
         """
-        return unidecode.unidecode(str(text)).lower().replace(' ', '_')
-    
+        replacements = {
+                    ' ': '_',
+                    '+': '_plus_',
+                    '-': '_moins_',
+                    '<': '_inf_',
+                    '>': '_sup_',
+                    '=': '_egal_',
+                    ':': '_',
+                    '(': '',
+                    ')': '',
+                    ',': '_',
+                    '\'': '_',
+                    '/': '_',
+                    '.': '_',
+                }
+        
+        # Normaliser le texte (accents, caractères spéciaux)
+        text = unidecode.unidecode(str(text)).lower()
+
+        # Remplacement des caractères spécifiques
+        for old, new in replacements.items():
+            text = text.replace(old, new)
+
+        # Remplacement des doubles underscores par un seul
+        while '__' in text:
+            text = text.replace('__', '_')
+
+        return text.strip('_')  # Suppression des underscores en début/fin    
+
     def serializer(self, sheets_data: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
         """
         Sérialise les données.
