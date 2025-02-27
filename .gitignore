@@ -178,3 +178,4 @@ cython_debug/
 /Notebook/traitement*
 /notebook/notebook_test.ipynb
 /versements
+/mesTests
