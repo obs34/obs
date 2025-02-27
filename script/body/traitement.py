@@ -2,14 +2,12 @@
 import psycopg2
 import traceback
 
-import script.body
 from ..branch.serialiseur import SerialiseurDeDonnees
 from ..branch.gestion_id import GestionId
 from ..branch.gestion_dossier import GestionDossier
 from ..branch.lecteur_excel_csv import LecteurExcelCsv
 from ..leaf.futile import *
-import script
-
+from ..body.livre import Livre
 
 class Traitement():
     """Gère le traitement des données."""
@@ -17,7 +15,7 @@ class Traitement():
     def __init__(self, 
                  db_connection: psycopg2.extensions.connection, 
                  chemin_excel: str, 
-                 livre: script.body.livre.Livre):
+                 livre: Livre):
         """
         Initialise le processeur de données.
         
