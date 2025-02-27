@@ -1,0 +1,4 @@
+customtkinter
+Pillow
+pandas
+psycopg2-binary  # PostgreSQL
