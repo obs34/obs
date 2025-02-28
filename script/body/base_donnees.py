@@ -2,7 +2,7 @@
 import getpass
 import psycopg2
 from psycopg2.extensions import connection
-from typing import Optional
+from typing import Optional,Tuple
 from IPython.display import clear_output
 
 class ConnectionBaseDeDonnees:
@@ -14,12 +14,18 @@ class ConnectionBaseDeDonnees:
         self.connection: Optional[connection] = None
         self.schema: Optional[str] = None
         
-    def connexion_observatoire(self) -> tuple[connection, str]:
+    def connexion_observatoire(self, observatory_id : str, password : str) -> Tuple[connection, str]:
         """
         Établit une connexion à l'observatoire choisi.
+        Args:
+            observatory_id (str): L'identifiant de l'observatoire choisi.
+            password (str): Le mot de passe pour la connexion.
         
         Returns:
             tuple: (connexion psycopg2, nom du schéma)
+        Raises:
+            ConnectionError: En cas d'échec de connexion à la base.
+            ValueError: Si l'observatoire est invalide.
         """
         observatories = {
             '1': {
@@ -84,34 +90,32 @@ class ConnectionBaseDeDonnees:
             },
         }
 
-        print("Liste des observatoires disponibles :", flush=True)
+        print("Liste des observatoires disponibles :")
         for key, obs in observatories.items():
-            print(f"{key} : {obs['name']}", flush=True)
-            
-        while True:
-            choice = input("Choisissez un observatoire (numéro) : ")
-            if choice in observatories:
-                obs = observatories[choice]
-                mdp = getpass.getpass(f"Entrez votre mot de passe pour le schéma {obs['params']['schema']} de la base de donnée {obs['params']['database']} : ")
-                try:
-                    # password = os.getenv(f"DB_PASSWORD_{choice}", "")
-                    self.connection = psycopg2.connect(
-                        database=obs['params']['database'],
-                        user=obs['params']['user'],
-                        password=mdp,
-                        host=obs['params']['host'],
-                        port=obs['params']['port']
-                    )
-                    self.schema = obs['params']['schema']
-                    clear_output(wait=True)
-                    print(f"Connexion réussie à {obs['name']} !")
-                    return self.connection, self.schema
-                except psycopg2.Error as e:
-                    print(f"Erreur de connexion : {e}")
-            else:
-                print("Choix invalide")
-    
+            print(f"{key} : {obs['name']}")
+        
+        
+        if observatory_id not in observatories:
+            raise ValueError("Observatoire invalide. Sélectionnez une option valide.")
+
+        obs = observatories[observatory_id]
+
+        try:
+            self.connection = psycopg2.connect(
+                database=obs['params']['database'],
+                user=obs['params']['user'],
+                password=password,  # Utilisation du mot de passe fourni
+                host=obs['params']['host'],
+                port=obs['params']['port']
+            )
+            self.schema = obs['params']['schema']
+            print(f"Connexion réussie à {obs['name']} !")
+            return self.connection, self.schema
+        except psycopg2.Error as e:
+            raise ConnectionError(f"Erreur de connexion : {e}")
+
     def close(self):
         """Ferme la connexion à la base de données."""
         if self.connection:
             self.connection.close()
+            print("Connexion fermée.")

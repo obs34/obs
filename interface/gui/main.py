@@ -8,18 +8,17 @@ import os
 # Ajouter le chemin du projet aux modules importables
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-print(sys.path)
 # Importation des modules internes
 from interface.logo import Logo
-from interface.interface.chargement_fichier import chargementFichiers
-from interface.base_donnees.base_donnees import ConnectionBaseDeDonnees
-from interface.scripts.versement import Versement
-from obs.script.body.traitement import Traitement
-from obs.script.body.livre import Livre
-from obs.script.leaf.validator import DataValidator
-from obs.script.branch.gestion_dossier import GestionDossier
-from obs.script.branch.gomme import Gomme
-from obs.script.leaf.futile import demander_choix_binaire
+from interface.gui.chargement_fichier import ChargementFichiers
+from script.body.base_donnees import ConnectionBaseDeDonnees
+from script.body.versement import Versement
+from script.body.traitement import Traitement
+from script.body.livre import Livre
+from script.leaf.validator import DataValidator
+from script.branch.gestion_dossier import GestionDossier
+from script.branch.gomme import Gomme
+#from script.leaf.futile import demander_choix_binaire
 
 #demander_choix_binaire('Coucou !')
 
@@ -65,7 +64,7 @@ class AppVersement(ctk.CTk):
         self.file_label.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
         self.sheets_list = ctk.CTkTextbox(self, height=5)
         self.sheets_list.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
-        self.file_loader = chargementFichiers(self.file_label, self.sheets_list)
+        self.file_loader = ChargementFichiers(self.file_label, self.sheets_list)
         self.load_btn = ctk.CTkButton(self, text="Charger un fichier", command=self.load_and_validate_file)
         self.load_btn.grid(row=3, column=0, padx=10, pady=5)
 
@@ -105,7 +104,7 @@ class AppVersement(ctk.CTk):
         Affiche un message dans la zone des logs en cas de succès ou d'échec.
         """
         self.fichier_excel = self.file_loader.load_excel()
-        if not self.fichier_excel or not DataValidator.validate_excel_file(self.fichier_excel):
+        if not self.fichier_excel: #or not DataValidator.validate_excel_file(self.fichier_excel):
             self.log_text.insert("end", "Fichier invalide !\n")
             return
         self.log_text.insert("end", "Fichier validé !\n")
@@ -138,7 +137,7 @@ class AppVersement(ctk.CTk):
         Traite les données en créant un objet Livre et en exécutant le traitement via la classe Traitement.
         """
         try:
-            self.livre = Livre(self.conn, self.schema, "theme", "base", "source", 2025)
+            self.livre = Livre(self.conn, "theme", "base", "source", 2025, self.schema)
             traiteur = Traitement(self.conn, self.fichier_excel, self.livre)
             traiteur.traitement()
             self.log_text.insert("end", "Données traitées !\n")
