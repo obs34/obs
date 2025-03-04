@@ -19,6 +19,8 @@ from script.leaf.validator import DataValidator
 from script.leaf.catalogue import Catalogue
 from script.branch.gestion_dossier import GestionDossier
 from script.branch.gomme import Gomme
+from script.leaf.catalogue_interface import CatalogueInterface
+
 
 
 class AppVersement(ctk.CTk):
@@ -206,7 +208,8 @@ class AppVersement(ctk.CTk):
         password = simpledialog.askstring(
             "Mot de passe",
             f"Entrez le mot de passe pour {selected_obs} :",
-            show="*"
+            show="*",
+            parent=self
         )
         if not password:
             self.log_text.insert("end", "Connexion annulée.\n")
@@ -216,14 +219,22 @@ class AppVersement(ctk.CTk):
             self.db = ConnectionBaseDeDonnees()
             self.conn, self.schema = self.db.connexion_observatoire(observatory_id, password)
             self.log_text.insert("end", f"Connexion réussie à {selected_obs}.\n")
-        except Exception as e:
-            self.log_text.insert("end", f"Erreur de connexion : {e}\n")
-            messagebox.showerror("Erreur", f"Impossible de se connecter à la base de données.\n{e}")
+        except UnicodeDecodeError:
+            self.log_text.insert("end", "Erreur de connexion : Problème d'encodage détecté. Veuillez vérifier vos informations de connexion.\n")
+            messagebox.showerror("Erreur","Impossible de se connecter à la base de données. Vérifier vos informations de connexion comme le mot de passe saisi.")
+        except Exception:
+            self.log_text.insert("end", f"Erreur de connexion : Impossible de se connecter à la base de données.\n")
+            messagebox.showerror("Erreur", f"Impossible de se connecter à la base de données.\nVeuillez vérifier vos informations de connexion comme le mot de passe saisi.")
 
     def process_data(self):
         """
-        Traite les données en créant un objet Livre et en exécutant le traitement via la classe Traitement.
+        Verification de la connexion à la base de données d'abord
+        Traitement des données en créant un objet Livre et en exécutant le traitement via la classe Traitement.
         """
+        if not self.conn:
+            messagebox.showerror("Erreur","Veuillez d'abord vous connecter à la base de données.")
+            self.log_text("end","Erreur: Connexion à la base de données non établie.\n")
+            return
         try:
             annee = self.annee_entry.get()
             theme = self.theme_entry.get()
@@ -261,123 +272,48 @@ class AppVersement(ctk.CTk):
         Supprime les fichiers temporaires créés durant le processus de traitement.
         """
         try:
-            confirmation = messagebox.askyesno(
-                "Confirmation", "Voulez-vous supprimer tous les dossiers commençant par 'traitement_' ?"
-            )
+            confirmation = messagebox.askyesno("Confirmation", "Voulez-vous supprimer tous les dossiers commençant par 'traitement_' ?")
             if confirmation:
-                GestionDossier(self.livre).delete_folder()
-                self.log_text.insert("end", "Nettoyage terminé !\n")
+                dossiers_supprimes = GestionDossier(self.livre).delete_folder()
+                if dossiers_supprimes :
+                    self.log_text.insert("end", f"Dossiers supprimés:{','.join(dossiers_supprimes)}.\n")
+                else :
+                    self.log_text.insert("end", "Aucun dossier à supprimer.\n")
             else:
                 self.log_text.insert("end", "Nettoyage annulé.\n")
         except Exception as e:
             self.log_text.insert("end", f"Erreur lors du nettoyage : {e}\n")
             messagebox.showerror("Erreur", f"Erreur lors de la suppression des fichiers temporaires.\n{e}")
 
+     # --- Ouverture du catalogue graphique ---
     def open_catalogue(self):
         if not self.livre:
             messagebox.showerror("Erreur", "Veuillez d'abord traiter les données.")
             return
 
-        # Créer une nouvelle fenêtre pour le catalogue
-        catalogue_window = ctk.CTkToplevel(self)
-        catalogue_window.title("Catalogue")
-        catalogue_window.geometry("800x600")
-
-        # Initialisation du catalogue
-        self.catalogue = Catalogue(self.livre)
-
-        # Affichage des options du catalogue
-        self.show_catalogue_options(catalogue_window)
-
-    def show_catalogue_options(self, window):
-        # Liste des dictionnaires disponibles
-        dictionnaires = {
-            "1": "pour faire une recherche sur les modalités et les variables d'une table en particulier.",
-            "2": "pour faire une recherche sur la table des modalités.",
-            "3": "pour faire une recherche sur la table des variables.",
-            "4": "pour faire une recherche sur le dictionnaire des tables."
-        }
-        # Afficher les options
-        ctk.CTkLabel(window, text="Liste des dictionnaires disponibles :").pack(pady=10)
-        for key, value in dictionnaires.items():
-            ctk.CTkLabel(window, text=f"{key}: {value}").pack()
-
-        # Champ pour choisir le dictionnaire
-        self.dictionnaire_var = ctk.StringVar()
-        ctk.CTkComboBox(
-            window, values=list(dictionnaires.keys()), variable=self.dictionnaire_var
-        ).pack(pady=10)
-
-        # Bouton pour valider le choix
-        ctk.CTkButton(
-            window, text="Valider", command=lambda: self.handle_catalogue_choice(window)
-        ).pack(pady=10)
-
-    def handle_catalogue_choice(self, window):
-        choix = self.dictionnaire_var.get()
-        if choix == "1":
-            # Afficher la liste des tables disponibles
-            liste_table = self.catalogue.liste_table(afficher=False)
-            self.show_table_selection(window, liste_table)
-        elif choix in ["2", "3", "4"]:
-            # Exécuter la requête SQL correspondante
-            params = {
-                "2": self.livre.nom_table_mod,
-                "3": self.livre.nom_table_var,
-                "4": self.livre.nom_table_vers,
-            }
-            requete_sql = f"select * from {self.livre.schema}.{params[choix]}"
-            df = pd.read_sql_query(requete_sql, self.livre.conn)
-            self.display_dataframe(df)
-        else:
-            messagebox.showerror("Erreur", "Choix invalide. Veuillez sélectionner une option valide.")
-
-    def show_table_selection(self, window, liste_table):
-        # Afficher la liste des tables disponibles
-        ctk.CTkLabel(window, text="Liste des tables disponibles :").pack(pady=10)
-        self.table_var = ctk.StringVar()
-        ctk.CTkComboBox(
-            window, values=liste_table, variable=self.table_var
-        ).pack(pady=10)
-
-        # Bouton pour valider la sélection
-        ctk.CTkButton(
-            window, text="Valider", command=lambda: self.handle_table_selection(window)
-        ).pack(pady=10)
-
-    def handle_table_selection(self, window):
-        table = self.table_var.get()
-        if not table:
-            messagebox.showerror("Erreur", "Veuillez sélectionner une table.")
+        # Vérifier si la fenêtre Catalogue existe déjà
+        if hasattr(self, "catalogue_window") and self.catalogue_window.winfo_exists():
+            self.catalogue_window.lift()
             return
 
-        requete_sql = f"""
-        select distinct
-            {self.livre.nom_table_var}.id_var,
-            {self.livre.nom_table_var}.nom_var,
-            {self.livre.nom_table_var}.joli_nom_var,
-            {self.livre.nom_table_var}.lib_long_var,
-            {self.livre.nom_table_mod}.id_mod,
-            {self.livre.nom_table_mod}.nom_mod,
-            {self.livre.nom_table_mod}.joli_nom_mod,
-            {self.livre.nom_table_mod}.lib_long_mod
-        from {self.livre.schema}.{table}
-        join {self.livre.schema}.{self.livre.nom_table_var} on {table}.id_var = {self.livre.nom_table_var}.id_var
-        join {self.livre.schema}.{self.livre.nom_table_mod} on {table}.id_mod = {self.livre.nom_table_mod}.id_mod
-        order by id_var, id_mod;
-        """
-        df = pd.read_sql_query(requete_sql, self.livre.conn)
-        self.display_dataframe(df)
+        # Créer une nouvelle fenêtre (Toplevel) qui prend (presque) tout l'écran
+        self.catalogue_window = ctk.CTkToplevel(self)
+        self.catalogue_window.title("Catalogue")
 
-    def display_dataframe(self, df):
-        result_window = ctk.CTkToplevel(self)
-        result_window.title("Résultats de la Recherche")
-        result_window.geometry("1000x600")
+        # Définir les nouvelles dimensions pour la fenêtre
+        new_width = 800  # Largeur réduite
+        new_height = 600  # Hauteur réduite
 
-        # Afficher le DataFrame dans un CTkTextbox
-        text_box = ctk.CTkTextbox(result_window, wrap="none")
-        text_box.pack(expand=True, fill="both")
-        text_box.insert("end", df.to_string(index=False))
+        # Vous pouvez ajuster la taille en récupérant les dimensions de l'écran
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width - new_width) // 2
+        y = (screen_height - new_height) // 2
+
+        # On enlève un peu pour laisser la barre de titre accessible
+        self.catalogue_window.geometry(f"{new_width}x{new_height}+{x}+{y}")
+        CatalogueInterface(self.livre, self.catalogue_window)
+        self.catalogue_window.lift()
 
 
 if __name__ == "__main__":
