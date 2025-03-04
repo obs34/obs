@@ -4,6 +4,7 @@ from tkinter import simpledialog, messagebox
 from PIL import Image
 import sys
 import os
+import tkinter as tk
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
@@ -15,8 +16,10 @@ from script.body.versement import Versement
 from script.body.traitement import Traitement
 from script.body.livre import Livre
 from script.leaf.validator import DataValidator
+from script.leaf.catalogue import Catalogue
 from script.branch.gestion_dossier import GestionDossier
 from script.branch.gomme import Gomme
+
 
 class AppVersement(ctk.CTk):
     def __init__(self):
@@ -52,28 +55,45 @@ class AppVersement(ctk.CTk):
          - Les boutons d'action (connexion, traitement, versement, nettoyage).
          - La zone des logs pour afficher les messages.
         """
+        self.catalogue_btn = ctk.CTkButton(
+            self, text="Ouvrir le Catalogue", command=self.open_catalogue
+        )
+        self.catalogue_btn.grid(row=12, column=0, padx=10, pady=5)
+
         # Zone du logo
         self.logo_frame = ctk.CTkFrame(self)
         self.logo_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
         if self.logo.get_image():
-            self.logo_label = ctk.CTkLabel(self.logo_frame, image=self.logo.get_image(), text="")
+            self.logo_label = ctk.CTkLabel(
+                self.logo_frame, image=self.logo.get_image(), text=""
+            )
         else:
-            self.logo_label = ctk.CTkLabel(self.logo_frame, text="Impossible de charger l'image")
+            self.logo_label = ctk.CTkLabel(
+                self.logo_frame, text="Impossible de charger l'image"
+            )
         self.logo_label.pack()
 
         # Sélection de fichier
-        self.file_label = ctk.CTkLabel(self, text="Aucun fichier sélectionné")
+        self.file_label = ctk.CTkLabel(
+            self, text="Aucun fichier sélectionné"
+        )
         self.file_label.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
         self.sheets_list = ctk.CTkTextbox(self, height=5)
         self.sheets_list.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
         self.file_loader = ChargementFichiers(self.file_label, self.sheets_list)
-        self.load_btn = ctk.CTkButton(self, text="Charger un fichier", command=self.load_and_validate_file)
+        self.load_btn = ctk.CTkButton(
+            self, text="Charger un fichier", command=self.load_and_validate_file
+        )
         self.load_btn.grid(row=3, column=0, padx=10, pady=5)
 
         # Sélection de l'observatoire
         self.obs_frame = ctk.CTkFrame(self)
         self.obs_frame.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
-        ctk.CTkLabel(self.obs_frame, text="Sélectionnez un Observatoire :", font=("Arial", 14)).pack(side="left", padx=5)
+        ctk.CTkLabel(
+            self.obs_frame,
+            text="Sélectionnez un Observatoire :",
+            font=("Arial", 14)
+        ).pack(side="left", padx=5)
         self.observatoires = {
             "l'ODH dans bdsociohab": "1",
             "la MDDP": "2",
@@ -82,55 +102,79 @@ class AppVersement(ctk.CTk):
             "Recette ODH": "5",
             "Recette test": "6",
         }
-        self.obs_combobox = ctk.CTkComboBox(self.obs_frame, values=list(self.observatoires.keys()), font=("Arial", 14))
+        self.obs_combobox = ctk.CTkComboBox(
+            self.obs_frame, values=list(self.observatoires.keys()), font=("Arial", 14)
+        )
         self.obs_combobox.pack(side="left", padx=5)
 
         # Sélection de l'échelle (pour le schéma)
         self.echelle_frame = ctk.CTkFrame(self)
         self.echelle_frame.grid(row=5, column=0, padx=10, pady=5, sticky="ew")
-        ctk.CTkLabel(self.echelle_frame, text="Sélectionnez l'échelle :", font=("Arial", 14)).pack(side="left", padx=5)
+        ctk.CTkLabel(
+            self.echelle_frame,
+            text="Sélectionnez l'échelle :",
+            font=("Arial", 14)
+        ).pack(side="left", padx=5)
         self.echelles = {
-            'commune': 'commune',
-            'epci': 'epci',
-            'iris': 'iris',
-            'departement': 'departement',
-            'parcelle': 'parcelle',
-            'logement': 'logement',
-            'section_cadastrale': 'section_cadastrale',
-            'canton': 'canton',
-            'odl': 'odl',
-            'autre': 'autre'
+            "commune": "commune",
+            "epci": "epci",
+            "iris": "iris",
+            "departement": "departement",
+            "parcelle": "parcelle",
+            "logement": "logement",
+            "section_cadastrale": "section_cadastrale",
+            "canton": "canton",
+            "odl": "odl",
+            "autre": "autre",
         }
-        self.echelle_combobox = ctk.CTkComboBox(self.echelle_frame, values=list(self.echelles.values()), font=("Arial", 14))
+        self.echelle_combobox = ctk.CTkComboBox(
+            self.echelle_frame, values=list(self.echelles.values()), font=("Arial", 14)
+        )
         self.echelle_combobox.pack(side="left", padx=5)
 
         # Paramètres de versement
         self.params_frame = ctk.CTkFrame(self)
         self.params_frame.grid(row=6, column=0, padx=20, pady=10, sticky="ew")
-        ctk.CTkLabel(self.params_frame, text="Année :", font=("Arial", 14)).grid(row=0, column=0, padx=5, pady=5)
+        ctk.CTkLabel(
+            self.params_frame, text="Année :", font=("Arial", 14)
+        ).grid(row=0, column=0, padx=5, pady=5)
         self.annee_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
         self.annee_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        ctk.CTkLabel(self.params_frame, text="Thème :", font=("Arial", 14)).grid(row=1, column=0, padx=5, pady=5)
+        ctk.CTkLabel(
+            self.params_frame, text="Thème :", font=("Arial", 14)
+        ).grid(row=1, column=0, padx=5, pady=5)
         self.theme_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
         self.theme_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        ctk.CTkLabel(self.params_frame, text="Base :", font=("Arial", 14)).grid(row=2, column=0, padx=5, pady=5)
+        ctk.CTkLabel(
+            self.params_frame, text="Base :", font=("Arial", 14)
+        ).grid(row=2, column=0, padx=5, pady=5)
         self.base_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
         self.base_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        ctk.CTkLabel(self.params_frame, text="Source :", font=("Arial", 14)).grid(row=3, column=0, padx=5, pady=5)
+        ctk.CTkLabel(
+            self.params_frame, text="Source :", font=("Arial", 14)
+        ).grid(row=3, column=0, padx=5, pady=5)
         self.source_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
         self.source_entry.grid(row=3, column=1, padx=5, pady=5)
 
         # Boutons d'action
-        self.db_btn = ctk.CTkButton(self, text="Connexion à PostgreSQL", command=self.connect_to_db)
+        self.db_btn = ctk.CTkButton(
+            self, text="Connexion à PostgreSQL", command=self.connect_to_db
+        )
         self.db_btn.grid(row=7, column=0, padx=10, pady=5)
-        self.process_btn = ctk.CTkButton(self, text="Traiter les données", command=self.process_data)
+        self.process_btn = ctk.CTkButton(
+            self, text="Traiter les données", command=self.process_data
+        )
         self.process_btn.grid(row=8, column=0, padx=10, pady=5)
-        self.versement_btn = ctk.CTkButton(self, text="Verser les données", command=self.perform_versement)
+        self.versement_btn = ctk.CTkButton(
+            self, text="Verser les données", command=self.perform_versement
+        )
         self.versement_btn.grid(row=9, column=0, padx=10, pady=5)
-        self.cleanup_btn = ctk.CTkButton(self, text="Nettoyer", command=self.cleanup)
+        self.cleanup_btn = ctk.CTkButton(
+            self, text="Nettoyer", command=self.cleanup
+        )
         self.cleanup_btn.grid(row=10, column=0, padx=10, pady=5)
 
         # Zone des logs
@@ -159,7 +203,11 @@ class AppVersement(ctk.CTk):
             self.log_text.insert("end", "Veuillez sélectionner un observatoire.\n")
             return
         observatory_id = self.observatoires[selected_obs]
-        password = simpledialog.askstring("Mot de passe", f"Entrez le mot de passe pour {selected_obs} :", show="*")
+        password = simpledialog.askstring(
+            "Mot de passe",
+            f"Entrez le mot de passe pour {selected_obs} :",
+            show="*"
+        )
         if not password:
             self.log_text.insert("end", "Connexion annulée.\n")
             return
@@ -213,7 +261,9 @@ class AppVersement(ctk.CTk):
         Supprime les fichiers temporaires créés durant le processus de traitement.
         """
         try:
-            confirmation = messagebox.askyesno("Confirmation", "Voulez-vous supprimer tous les dossiers commençant par 'traitement_' ?")
+            confirmation = messagebox.askyesno(
+                "Confirmation", "Voulez-vous supprimer tous les dossiers commençant par 'traitement_' ?"
+            )
             if confirmation:
                 GestionDossier(self.livre).delete_folder()
                 self.log_text.insert("end", "Nettoyage terminé !\n")
@@ -222,6 +272,113 @@ class AppVersement(ctk.CTk):
         except Exception as e:
             self.log_text.insert("end", f"Erreur lors du nettoyage : {e}\n")
             messagebox.showerror("Erreur", f"Erreur lors de la suppression des fichiers temporaires.\n{e}")
+
+    def open_catalogue(self):
+        if not self.livre:
+            messagebox.showerror("Erreur", "Veuillez d'abord traiter les données.")
+            return
+
+        # Créer une nouvelle fenêtre pour le catalogue
+        catalogue_window = ctk.CTkToplevel(self)
+        catalogue_window.title("Catalogue")
+        catalogue_window.geometry("800x600")
+
+        # Initialisation du catalogue
+        self.catalogue = Catalogue(self.livre)
+
+        # Affichage des options du catalogue
+        self.show_catalogue_options(catalogue_window)
+
+    def show_catalogue_options(self, window):
+        # Liste des dictionnaires disponibles
+        dictionnaires = {
+            "1": "pour faire une recherche sur les modalités et les variables d'une table en particulier.",
+            "2": "pour faire une recherche sur la table des modalités.",
+            "3": "pour faire une recherche sur la table des variables.",
+            "4": "pour faire une recherche sur le dictionnaire des tables."
+        }
+        # Afficher les options
+        ctk.CTkLabel(window, text="Liste des dictionnaires disponibles :").pack(pady=10)
+        for key, value in dictionnaires.items():
+            ctk.CTkLabel(window, text=f"{key}: {value}").pack()
+
+        # Champ pour choisir le dictionnaire
+        self.dictionnaire_var = ctk.StringVar()
+        ctk.CTkComboBox(
+            window, values=list(dictionnaires.keys()), variable=self.dictionnaire_var
+        ).pack(pady=10)
+
+        # Bouton pour valider le choix
+        ctk.CTkButton(
+            window, text="Valider", command=lambda: self.handle_catalogue_choice(window)
+        ).pack(pady=10)
+
+    def handle_catalogue_choice(self, window):
+        choix = self.dictionnaire_var.get()
+        if choix == "1":
+            # Afficher la liste des tables disponibles
+            liste_table = self.catalogue.liste_table(afficher=False)
+            self.show_table_selection(window, liste_table)
+        elif choix in ["2", "3", "4"]:
+            # Exécuter la requête SQL correspondante
+            params = {
+                "2": self.livre.nom_table_mod,
+                "3": self.livre.nom_table_var,
+                "4": self.livre.nom_table_vers,
+            }
+            requete_sql = f"select * from {self.livre.schema}.{params[choix]}"
+            df = pd.read_sql_query(requete_sql, self.livre.conn)
+            self.display_dataframe(df)
+        else:
+            messagebox.showerror("Erreur", "Choix invalide. Veuillez sélectionner une option valide.")
+
+    def show_table_selection(self, window, liste_table):
+        # Afficher la liste des tables disponibles
+        ctk.CTkLabel(window, text="Liste des tables disponibles :").pack(pady=10)
+        self.table_var = ctk.StringVar()
+        ctk.CTkComboBox(
+            window, values=liste_table, variable=self.table_var
+        ).pack(pady=10)
+
+        # Bouton pour valider la sélection
+        ctk.CTkButton(
+            window, text="Valider", command=lambda: self.handle_table_selection(window)
+        ).pack(pady=10)
+
+    def handle_table_selection(self, window):
+        table = self.table_var.get()
+        if not table:
+            messagebox.showerror("Erreur", "Veuillez sélectionner une table.")
+            return
+
+        requete_sql = f"""
+        select distinct
+            {self.livre.nom_table_var}.id_var,
+            {self.livre.nom_table_var}.nom_var,
+            {self.livre.nom_table_var}.joli_nom_var,
+            {self.livre.nom_table_var}.lib_long_var,
+            {self.livre.nom_table_mod}.id_mod,
+            {self.livre.nom_table_mod}.nom_mod,
+            {self.livre.nom_table_mod}.joli_nom_mod,
+            {self.livre.nom_table_mod}.lib_long_mod
+        from {self.livre.schema}.{table}
+        join {self.livre.schema}.{self.livre.nom_table_var} on {table}.id_var = {self.livre.nom_table_var}.id_var
+        join {self.livre.schema}.{self.livre.nom_table_mod} on {table}.id_mod = {self.livre.nom_table_mod}.id_mod
+        order by id_var, id_mod;
+        """
+        df = pd.read_sql_query(requete_sql, self.livre.conn)
+        self.display_dataframe(df)
+
+    def display_dataframe(self, df):
+        result_window = ctk.CTkToplevel(self)
+        result_window.title("Résultats de la Recherche")
+        result_window.geometry("1000x600")
+
+        # Afficher le DataFrame dans un CTkTextbox
+        text_box = ctk.CTkTextbox(result_window, wrap="none")
+        text_box.pack(expand=True, fill="both")
+        text_box.insert("end", df.to_string(index=False))
+
 
 if __name__ == "__main__":
     app = AppVersement()

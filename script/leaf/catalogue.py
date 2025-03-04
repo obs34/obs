@@ -15,17 +15,16 @@ class Catalogue:
 
         # https://www.geeksforgeeks.org/how-to-print-an-entire-pandas-dataframe-in-python/
 
-        dictionnaires = {'1': {'choix': "pour faire une recherche sur les modalités et les variables d'une table en particulier.",
-                                'nom_table': None},
-                        '2': {'choix': "pour faire une recherche sur la table des modalités.",
-                                        'nom_table': self.livre.nom_table_mod},
-                        '3': {'choix': "pour faire une recherche sur la table des variables.",
-                                'nom_table': self.livre.nom_table_var},
-                        '4': {'choix': "pour faire une recherche sur le dictionnaire des tables.",
-                                'nom_table': self.livre.nom_table_vers}}
+        dictionnaires = {
+            '1': {'choix': "pour faire une recherche sur les modalités et les variables d'une table en particulier.",'nom_table': None},
+            '2': {'choix': "pour faire une recherche sur la table des modalités.",'nom_table': self.livre.nom_table_mod},
+            '3': {'choix': "pour faire une recherche sur la table des variables.",'nom_table': self.livre.nom_table_var},
+            '4': {'choix': "pour faire une recherche sur le dictionnaire des tables.",'nom_table': self.livre.nom_table_vers}
+        }
         print("""Liste des dictionnaires disponibles :""")
         for dictionnaire, params in dictionnaires.items():
             print(f"""{dictionnaire} : {params['choix']}""")
+            
         time.sleep(1) # Pour éviter que les messages se mélangent
         ok=False
         while not ok:
