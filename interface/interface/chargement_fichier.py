@@ -13,8 +13,9 @@ class chargementFichiers:
             try:
                 excel_data = pd.ExcelFile(file_path)
                 sheet_names = excel_data.sheet_names
-                output = "\n".join([f" {sheet}" for sheet in excel_data.sheet_names])
+                output = ", ".join([f" {sheet}" for sheet in excel_data.sheet_names])
                 self.sheets_list.delete("0.0", "end")
                 self.sheets_list.insert("0.0", output)
+                return excel_data
             except Exception as e:
                 messagebox.showerror("Error", f"Error loading Excel file: {e}")
