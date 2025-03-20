@@ -9,7 +9,8 @@ import glob
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from interface.interface.chargement_fichier import chargementFichiers
-from interface.base_donnees.base_donnees import ConnectionBaseDeDonnees
+# from interface.base_donnees.base_donnees import ConnectionBaseDeDonnees
+from script.body.base_donnees import ConnectionBaseDeDonnees
 from script.body.versement import Versement
 from script.body.traitement import Traitement
 from script.body.livre import Livre
@@ -164,13 +165,6 @@ class AppVersement(ctk.CTkFrame):
         dossier_csv = sorted(glob.glob(f'traitement_*'), key=os.path.getmtime)[-1] # {self.livre.PREFIXE_DOSSIER_TEMPORAIRE}
         chemin_csv = os.path.join(dossier_data, dossier_csv)
         fichiers_csv = glob.glob(os.path.join(chemin_csv, "*.csv"))
-        print(dossier_data)
-        print('*'*50)
-        print(dossier_csv)
-        print('*'*50)
-        print(chemin_csv)
-        print('*'*50)
-        print(fichiers_csv)
         if fichiers_csv:
             self.csv_files_combobox.configure(values=fichiers_csv)
             self.log_text.insert("end", f"Fichiers CSV chargés : {len(fichiers_csv)} trouvés.\n")

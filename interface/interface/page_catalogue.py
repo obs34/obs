@@ -3,7 +3,8 @@ import time
 import customtkinter as ctk
 from tkinter import simpledialog, messagebox, ttk
 
-from interface.base_donnees.base_donnees import ConnectionBaseDeDonnees
+# from interface.base_donnees.base_donnees import ConnectionBaseDeDonnees
+from script.body.base_donnees import ConnectionBaseDeDonnees
 from script.body.livre import Livre
 from script.leaf.catalogue import Catalogue
 
