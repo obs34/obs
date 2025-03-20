@@ -98,6 +98,7 @@ class AppVersement(ctk.CTkFrame):
         # Liste des fichiers CSV disponibles
         self.csv_files_combobox = ctk.CTkComboBox(self, values=[], font=("Arial", 14))
         self.csv_files_combobox.grid(row=15, column=0, padx=10, pady=5, sticky="ew")
+        self.csv_files_combobox.set("Appuyer sur le bouton 'Charger les CSV'")
 
         # Bouton pour charger les fichiers CSV
         self.load_csv_btn = ctk.CTkButton(self, text="Charger les CSV", command=self.load_csv_files)
