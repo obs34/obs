@@ -21,22 +21,37 @@ class GestionDossier():
         print("Tous les fichiers csv vont être créés dans ce dossier.")
 
     def delete_folder(self):
-        '''Supprime les dossiers temporaire.'''
-        message = f'Voulez-vous supprimer tous les dossiers commençant par {self.livre.PREFIXE_DOSSIER_TEMPORAIRE} ? (O/N) '
+        '''Supprime les dossiers temporaires sans demander de confirmation (celle-ci sera gérée par l'interface).'''
         dossiers = glob.glob(f'{self.livre.PREFIXE_DOSSIER_TEMPORAIRE}*')
+        dossiers_supprimes = []
         if dossiers:
-            choix = demander_choix_binaire(message)
-            if choix:
-                brules = []
-                for dossier in dossiers:
-                    try:
-                        shutil.rmtree(dossier)
-                        brules.append(dossier)
-                    except OSError as e:
-                        print("Error: %s - %s." % (e.foldername, e.strerror))
-                print(f"Dossiers supprimés : {', '.join(brules)}.")
-            else:
-                print("Aucun dossier à supprimer.")
+            for dossier in dossiers:
+                try:
+                    shutil.rmtree(dossier)
+                    dossiers_supprimes.append(dossier)
+                except OSError as e:
+                    print("Error: %s - %s." % (e.filename, e.strerror))
+            return dossiers_supprimes
+        else:
+            return []
+
+    # def delete_folder(self):
+    #     '''Supprime les dossiers temporaire.'''
+    #     message = f'Voulez-vous supprimer tous les dossiers commençant par {self.livre.PREFIXE_DOSSIER_TEMPORAIRE} ? (O/N) '
+    #     dossiers = glob.glob(f'{self.livre.PREFIXE_DOSSIER_TEMPORAIRE}*')
+    #     if dossiers:
+    #         choix = demander_choix_binaire(message)
+    #         if choix:
+    #             brules = []
+    #             for dossier in dossiers:
+    #                 try:
+    #                     shutil.rmtree(dossier)
+    #                     brules.append(dossier)
+    #                 except OSError as e:
+    #                     print("Error: %s - %s." % (e.foldername, e.strerror))
+    #             print(f"Dossiers supprimés : {', '.join(brules)}.")
+    #         else:
+    #             print("Aucun dossier à supprimer.")
 
     def processed_data_to_csv(self, processed_data: dict[str, pd.DataFrame]):
         '''Enregistre les données traitées dans un fichier CSV.'''
