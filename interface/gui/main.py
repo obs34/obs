@@ -5,6 +5,8 @@ from PIL import Image
 import sys
 import os
 import tkinter as tk
+import tkinter.filedialog as fd
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
@@ -42,7 +44,10 @@ class AppVersement(ctk.CTk):
         self.schema = None
         self.fichier_excel = None
         self.livre = None
+        self.output_folder = None
 
+
+ 
         self.create_widgets()
 
     def create_widgets(self):
@@ -58,7 +63,8 @@ class AppVersement(ctk.CTk):
          - La zone des logs pour afficher les messages.
         """
         self.catalogue_btn = ctk.CTkButton(
-            self, text="Ouvrir le Catalogue", command=self.open_catalogue
+            self, text="Ouvrir le Catalogue", command=self.open_catalogue,
+            fg_color="#B30066",hover_color="#A2005A",text_color="#FFFFFF"
         )
         self.catalogue_btn.grid(row=12, column=0, padx=10, pady=5)
 
@@ -77,24 +83,26 @@ class AppVersement(ctk.CTk):
 
         # Sélection de fichier
         self.file_label = ctk.CTkLabel(
-            self, text="Aucun fichier sélectionné"
+            self, text="Aucun fichier sélectionné",font=("Arial", 14, "bold")
         )
         self.file_label.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
         self.sheets_list = ctk.CTkTextbox(self, height=5)
         self.sheets_list.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
         self.file_loader = ChargementFichiers(self.file_label, self.sheets_list)
         self.load_btn = ctk.CTkButton(
-            self, text="Charger un fichier", command=self.load_and_validate_file
+            self, text="Charger un fichier", command=self.load_and_validate_file,
+            fg_color="#B30066", hover_color="#A2005A", text_color="#FFFFFF"
         )
         self.load_btn.grid(row=3, column=0, padx=10, pady=5)
 
         # Sélection de l'observatoire
         self.obs_frame = ctk.CTkFrame(self)
         self.obs_frame.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
+    
         ctk.CTkLabel(
             self.obs_frame,
             text="Sélectionnez un Observatoire :",
-            font=("Arial", 14)
+            font=("Arial", 14),
         ).pack(side="left", padx=5)
         self.observatoires = {
             "l'ODH dans bdsociohab": "1",
@@ -111,7 +119,7 @@ class AppVersement(ctk.CTk):
 
         # Sélection de l'échelle (pour le schéma)
         self.echelle_frame = ctk.CTkFrame(self)
-        self.echelle_frame.grid(row=5, column=0, padx=10, pady=5, sticky="ew")
+        self.echelle_frame.grid(row=5, column=0, padx=15, pady=5, sticky="ew")
         ctk.CTkLabel(
             self.echelle_frame,
             text="Sélectionnez l'échelle :",
@@ -137,45 +145,46 @@ class AppVersement(ctk.CTk):
         # Paramètres de versement
         self.params_frame = ctk.CTkFrame(self)
         self.params_frame.grid(row=6, column=0, padx=20, pady=10, sticky="ew")
-        ctk.CTkLabel(
-            self.params_frame, text="Année :", font=("Arial", 14)
-        ).grid(row=0, column=0, padx=5, pady=5)
-        self.annee_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
+
+        # Année
+        ctk.CTkLabel(self.params_frame, text="Année :", font=("Arial", 14)).grid(row=0, column=0, padx=5, pady=5)
+        self.annee_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
         self.annee_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        ctk.CTkLabel(
-            self.params_frame, text="Thème :", font=("Arial", 14)
-        ).grid(row=1, column=0, padx=5, pady=5)
-        self.theme_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
-        self.theme_entry.grid(row=1, column=1, padx=5, pady=5)
+    # Thème
+        ctk.CTkLabel(self.params_frame, text="Thème :", font=("Arial", 14)).grid(row=0, column=2, padx=5, pady=5)
+        self.theme_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
+        self.theme_entry.grid(row=0, column=3, padx=5, pady=5)
 
-        ctk.CTkLabel(
-            self.params_frame, text="Base :", font=("Arial", 14)
-        ).grid(row=2, column=0, padx=5, pady=5)
-        self.base_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
-        self.base_entry.grid(row=2, column=1, padx=5, pady=5)
+    # Base
+        ctk.CTkLabel(self.params_frame, text="Base :", font=("Arial", 14)).grid(row=0, column=4, padx=5, pady=5)
+        self.base_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
+        self.base_entry.grid(row=0, column=5, padx=5, pady=5)
 
-        ctk.CTkLabel(
-            self.params_frame, text="Source :", font=("Arial", 14)
-        ).grid(row=3, column=0, padx=5, pady=5)
-        self.source_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14))
-        self.source_entry.grid(row=3, column=1, padx=5, pady=5)
+    # Source
+        ctk.CTkLabel(self.params_frame, text="Source :", font=("Arial", 14)).grid(row=0, column=6, padx=5, pady=5)
+        self.source_entry = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
+        self.source_entry.grid(row=0, column=7, padx=5, pady=5)
 
         # Boutons d'action
         self.db_btn = ctk.CTkButton(
-            self, text="Connexion à PostgreSQL", command=self.connect_to_db
+            self, text="Connexion à PostgreSQL", command=self.connect_to_db,
+            fg_color="#B30066", hover_color="#A2005A", text_color="#FFFFFF"
         )
         self.db_btn.grid(row=7, column=0, padx=10, pady=5)
         self.process_btn = ctk.CTkButton(
-            self, text="Traiter les données", command=self.process_data
+            self, text="Traiter les données", command=self.process_data,
+            fg_color="#B30066", hover_color="#A2005A", text_color="#FFFFFF"
         )
         self.process_btn.grid(row=8, column=0, padx=10, pady=5)
         self.versement_btn = ctk.CTkButton(
-            self, text="Verser les données", command=self.perform_versement
+            self, text="Verser les données", command=self.perform_versement,
+            fg_color="#B30066", hover_color="#A2005A", text_color="#FFFFFF"
         )
         self.versement_btn.grid(row=9, column=0, padx=10, pady=5)
         self.cleanup_btn = ctk.CTkButton(
-            self, text="Nettoyer", command=self.cleanup
+            self, text="Nettoyer", command=self.cleanup,
+            fg_color="#B30066", hover_color="#A2005A", text_color="#FFFFFF"
         )
         self.cleanup_btn.grid(row=10, column=0, padx=10, pady=5)
 
@@ -226,6 +235,21 @@ class AppVersement(ctk.CTk):
             self.log_text.insert("end", f"Erreur de connexion : Impossible de se connecter à la base de données.\n")
             messagebox.showerror("Erreur", f"Impossible de se connecter à la base de données.\nVeuillez vérifier vos informations de connexion comme le mot de passe saisi.")
 
+    # def choose_output_folder(self):
+    #     """
+    #     Affiche une boîte de dialogue pour que l'utilisateur choisisse le dossier de sortie.
+    #     """
+    #     folder = fd.askdirectory(
+    #     initialdir="C:/Users/indiaye/Documents/versements",
+    #     title="Choisissez le dossier de sortie"
+    #     )
+    #     if folder:
+    #         self.output_folder = folder
+    #         self.log_text.insert("end", f"Dossier de sortie sélectionné : {folder}\n")
+    #     else:
+    #         self.log_text.insert("end", "Aucun dossier sélectionné. Veuillez en choisir un.\n")
+
+            
     def process_data(self):
         """
         Verification de la connexion à la base de données d'abord
@@ -233,8 +257,14 @@ class AppVersement(ctk.CTk):
         """
         if not self.conn:
             messagebox.showerror("Erreur","Veuillez d'abord vous connecter à la base de données.")
-            self.log_text("end","Erreur: Connexion à la base de données non établie.\n")
+            self.log_text.insert("end","Erreur: Connexion à la base de données non établie.\n")
             return
+        
+        # # Si l'utilisateur n'a pas encore choisi de dossier de sortie, on le demande AVANT le traitement.
+        # if not self.output_folder:
+        #     self.choose_output_folder()
+        #     if not self.output_folder:  # Si l'utilisateur annule, on arrête le traitement
+        #         return
         try:
             annee = self.annee_entry.get()
             theme = self.theme_entry.get()
@@ -248,9 +278,24 @@ class AppVersement(ctk.CTk):
 
             self.livre = Livre(self.conn, theme, base, source, int(annee), self.schema)
             self.livre.echelle = echelle
+             # Créer une instance de GestionDossier en passant le dossier choisi
+            self.gestion_dossier = GestionDossier(self.livre, output_folder=self.output_folder)
+            #lancer le traitement
             traiteur = Traitement(self.conn, self.fichier_excel, self.livre)
             traiteur.traitement()
             self.log_text.insert("end", "Données traitées !\n")
+
+            # Vérifier que la méthode create_folder() a bien été appelée dans Traitement
+            if not hasattr(traiteur.gestion_dossier, "dossier_temporaire"):
+                raise Exception("Le dossier temporaire n'est pas défini.")
+
+             # Enregistrement des fichiers CSV dans le dossier choisi
+            gd = GestionDossier(self.livre)
+            moved=gd.move_csv_files(self.output_folder)
+            #gd.processed_data_to_csv(self.output_folder)
+            self.log_text.insert("end", f"Fichiers déplacés vers {self.output_folder} :\n{', '.join(moved)}\n")
+            #self.log_text.insert("end", "Fichiers CSV enregistrés dans le dossier sélectionné.\n")
+
         except Exception as e:
             self.log_text.insert("end", f"Erreur lors du traitement : {e}\n")
             messagebox.showerror("Erreur", f"Erreur lors du traitement des données.\n{e}")
