@@ -68,45 +68,94 @@ class AppVersement(ctk.CTkFrame):
         self.db_btn = ctk.CTkButton(self, text="Connexion à PostgreSQL", command=self.connect_to_db)
         self.db_btn.grid(row=6, column=0, padx=12, pady=5)
 
-        # Champs de saisie
-        self.entree1 = ctk.CTkEntry(self, placeholder_text="thème")
-        self.entree1.grid(row=7, column=0, padx=5, pady=5)
+        # # Champs de saisie
+        # Sélection de l'échelle
+        self.obs_frame = ctk.CTkFrame(self)
+        self.obs_frame.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
+        ctk.CTkLabel(self.obs_frame, text="Sélectionnez une échelle :", font=("Arial", 14)).pack(side="left", padx=5)
+        self.echelles = {
+            'commune': 'commune',
+            'epci': 'epci',
+            'iris': 'iris',
+            'departement': 'departement',
+            'parcelle': 'parcelle',
+            'logement': 'logement',
+            'section_cadastrale': 'section_cadastrale',
+            'canton': 'canton',
+            'odl': 'odl',
+            'autre': 'autre'
+        }
+        self.echelle_combobox = ctk.CTkComboBox(self.obs_frame, values=list(self.echelles.keys()), font=("Arial", 14))
+        self.echelle_combobox.pack(side="left", padx=5)
 
-        self.entree2 = ctk.CTkEntry(self, placeholder_text="base")
-        self.entree2.grid(row=8, column=0, padx=5, pady=5)
+        self.params_frame = ctk.CTkFrame(self)
+        self.params_frame.grid(row=8, column=0, padx=20, pady=10, sticky="ew")
 
-        self.entree3 = ctk.CTkEntry(self, placeholder_text="source")
-        self.entree3.grid(row=9, column=0, padx=5, pady=5)
+    # Année
+        ctk.CTkLabel(self.params_frame, text="Année :", font=("Arial", 14)).grid(row=0, column=0, padx=5, pady=5)
+        self.entree4 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
+        self.entree4.grid(row=0, column=1, padx=5, pady=5)
 
-        self.entree4 = ctk.CTkEntry(self, placeholder_text="année")
-        self.entree4.grid(row=10, column=0, padx=5, pady=5)
+    # Thème
+        ctk.CTkLabel(self.params_frame, text="Thème :", font=("Arial", 14)).grid(row=0, column=2, padx=5, pady=5)
+        self.entree1 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
+        self.entree1.grid(row=0, column=3, padx=5, pady=5)
+
+    # Base
+        ctk.CTkLabel(self.params_frame, text="Base :", font=("Arial", 14)).grid(row=0, column=4, padx=5, pady=5)
+        self.entree2 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
+        self.entree2.grid(row=0, column=5, padx=5, pady=5)
+
+    # Source
+        ctk.CTkLabel(self.params_frame, text="Source :", font=("Arial", 14)).grid(row=0, column=6, padx=5, pady=5)
+        self.entree3 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
+        self.entree3.grid(row=0, column=7, padx=5, pady=5)
+
+
+        # self.entree1 = ctk.CTkEntry(self, placeholder_text="thème")
+        # self.entree1.grid(row=8, column=0, padx=5, pady=5)
+
+        # self.entree2 = ctk.CTkEntry(self, placeholder_text="base")
+        # self.entree2.grid(row=8, column=1, padx=5, pady=5)
+
+        # self.entree3 = ctk.CTkEntry(self, placeholder_text="source")
+        # self.entree3.grid(row=8, column=2, padx=5, pady=5)
+
+        # self.entree4 = ctk.CTkEntry(self, placeholder_text="année")
+        # self.entree4.grid(row=8, column=3, padx=5, pady=5)
 
         # Actions
         self.process_btn = ctk.CTkButton(self, text="Traiter les données", command=self.process_data)
-        self.process_btn.grid(row=11, column=0, padx=12, pady=5)
+        self.process_btn.grid(row=9, column=0, padx=12, pady=5)
 
         self.versement_btn = ctk.CTkButton(self, text="Verser les données", command=self.perform_versement)
-        self.versement_btn.grid(row=12, column=0, padx=12, pady=5)
+        self.versement_btn.grid(row=10, column=0, padx=12, pady=5)
 
         self.cleanup_btn = ctk.CTkButton(self, text="Nettoyer", command=self.cleanup)
-        self.cleanup_btn.grid(row=13, column=0, padx=12, pady=5)
-
-        # Zone des logs
-        self.log_text = ctk.CTkTextbox(self, height=10)
-        self.log_text.grid(row=14, column=0, padx=10, pady=10, sticky="nsew")
+        self.cleanup_btn.grid(row=11, column=0, padx=12, pady=5)
 
         # Liste des fichiers CSV disponibles
         self.csv_files_combobox = ctk.CTkComboBox(self, values=[], font=("Arial", 14))
-        self.csv_files_combobox.grid(row=15, column=0, padx=10, pady=5, sticky="ew")
+        self.csv_files_combobox.grid(row=12, column=0, padx=12, pady=5, sticky="ew")
         self.csv_files_combobox.set("Appuyer sur le bouton 'Charger les CSV'")
 
         # Bouton pour charger les fichiers CSV
         self.load_csv_btn = ctk.CTkButton(self, text="Charger les CSV", command=self.load_csv_files)
-        self.load_csv_btn.grid(row=16, column=0, padx=10, pady=5)
+        self.load_csv_btn.grid(row=13, column=0, padx=12)
 
         # Bouton pour ouvrir et éditer le CSV sélectionné
         self.edit_csv_btn = ctk.CTkButton(self, text="Éditer CSV sélectionné", command=self.edit_selected_csv)
-        self.edit_csv_btn.grid(row=17, column=0, padx=10, pady=5)
+        self.edit_csv_btn.grid(row=14, column=0)
+
+        # Zone des logs
+        self.log_text = ctk.CTkTextbox(self, height=10)
+        self.log_text.grid(row=15, column=0, sticky="nsew")
+
+        # Permettre à la colonne 0 de s'étendre
+        self.grid_columnconfigure(0, weight=1)
+
+        # Permettre à la ligne 15 (logs) de s'étendre
+        self.grid_rowconfigure(15, weight=1)
 
     # Méthodes existantes inchangées
     def load_and_validate_file(self):
@@ -138,6 +187,9 @@ class AppVersement(ctk.CTkFrame):
         try:
             self.livre = Livre(self.conn, schema=self.schema, theme=self.entree1.get(),
                                base=self.entree2.get(), source=self.entree3.get(), annee=self.entree4.get())
+            self.livre.echelle = self.echelle_combobox.get()
+            if not self.livre.echelle:
+                self.log_text.insert("end", "Veuillez sélectionner une échelle.\n")
             Traitement(self.conn, self.fichier_excel, self.livre).traitement()
             self.log_text.insert("end", "Données traitées !\n")
         except Exception as e:
@@ -162,10 +214,10 @@ class AppVersement(ctk.CTkFrame):
 
     def load_csv_files(self):
         # Chemin relatif vers le dossier contenant les CSV (à partir du fichier Python exécuté)
-        dossier_data = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+        # dossier_data = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
         dossier_csv = sorted(glob.glob(f'traitement_*'), key=os.path.getmtime)[-1] # {self.livre.PREFIXE_DOSSIER_TEMPORAIRE}
-        chemin_csv = os.path.join(dossier_data, dossier_csv)
-        fichiers_csv = glob.glob(os.path.join(chemin_csv, "*.csv"))
+        # chemin_csv = os.path.join(dossier_data, dossier_csv)
+        fichiers_csv = glob.glob(os.path.join(dossier_csv, "*.csv")) # chemin_csv
         if fichiers_csv:
             self.csv_files_combobox.configure(values=fichiers_csv)
             self.log_text.insert("end", f"Fichiers CSV chargés : {len(fichiers_csv)} trouvés.\n")
