@@ -1,7 +1,7 @@
 """Module de validation des données."""
 import os
 import pandas as pd
-from typing import Any, List, Dict
+from typing import List
 
 class DataValidator:
     """Classe de validation des données."""

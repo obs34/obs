@@ -1,9 +1,7 @@
 import pandas as pd
-import time
 import customtkinter as ctk
 from tkinter import simpledialog, messagebox, ttk
 
-# from interface.base_donnees.base_donnees import ConnectionBaseDeDonnees
 from script.body.base_donnees import ConnectionBaseDeDonnees
 from script.body.livre import Livre
 from script.leaf.catalogue import Catalogue
@@ -67,10 +65,6 @@ class AppCatalogue(ctk.CTkFrame):
         # Champs de saisie : table
         self.nom_table = ctk.CTkEntry(self, placeholder_text="Nom d'une table")
         self.nom_table.grid(row=6, column=0, padx=5, pady=5)
-
-        # # Champs de saisie : mot-clé
-        # self.motcle = ctk.CTkEntry(self, placeholder_text="mot-clé")
-        # self.motcle.grid(row=7, column=0, padx=5, pady=5)
 
         # Catalogue
         self.load_btn = ctk.CTkButton(self, text="Catalogue", command=self.fun_catalogue)

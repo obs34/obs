@@ -1,6 +1,6 @@
 from IPython.display import clear_output
 import time
-from ..leaf.futile import *
+from script.leaf.futile import *
 
 class Gomme:
     """

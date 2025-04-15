@@ -4,10 +4,10 @@ import os
 import psycopg2
 import pandas as pd
 import traceback
-from IPython.display import clear_output
-from ..branch.lecteur_excel_csv import LecteurExcelCsv
-from ..branch.gestion_table import CreationTable
-from ..leaf.futile import *
+
+from script.branch.lecteur_excel_csv import LecteurExcelCsv
+from script.branch.gestion_table import CreationTable
+from script.leaf.futile import *
 
 class Versement:
     """Verse les données."""

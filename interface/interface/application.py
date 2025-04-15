@@ -1,6 +1,6 @@
 import customtkinter as ctk
-from page_versement import AppVersement
-from page_catalogue import AppCatalogue
+from interface.interface.page_versement import AppVersement
+from interface.interface.page_catalogue import AppCatalogue
 
 class Application(ctk.CTk):
     def __init__(self):

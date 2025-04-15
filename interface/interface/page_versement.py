@@ -1,15 +1,11 @@
 import customtkinter as ctk
 import pandas as pd
-from tkinter import simpledialog, messagebox, ttk
+from tkinter import simpledialog, messagebox
 import tksheet
-import sys
 import os
 import glob
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
 from interface.interface.chargement_fichier import chargementFichiers
-# from interface.base_donnees.base_donnees import ConnectionBaseDeDonnees
 from script.body.base_donnees import ConnectionBaseDeDonnees
 from script.body.versement import Versement
 from script.body.traitement import Traitement
@@ -91,38 +87,25 @@ class AppVersement(ctk.CTkFrame):
         self.params_frame = ctk.CTkFrame(self)
         self.params_frame.grid(row=8, column=0, padx=20, pady=10, sticky="ew")
 
-    # Année
+        # année
         ctk.CTkLabel(self.params_frame, text="Année :", font=("Arial", 14)).grid(row=0, column=0, padx=5, pady=5)
         self.entree4 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
         self.entree4.grid(row=0, column=1, padx=5, pady=5)
 
-    # Thème
+        # thème
         ctk.CTkLabel(self.params_frame, text="Thème :", font=("Arial", 14)).grid(row=0, column=2, padx=5, pady=5)
         self.entree1 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
         self.entree1.grid(row=0, column=3, padx=5, pady=5)
 
-    # Base
+        # base
         ctk.CTkLabel(self.params_frame, text="Base :", font=("Arial", 14)).grid(row=0, column=4, padx=5, pady=5)
         self.entree2 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
         self.entree2.grid(row=0, column=5, padx=5, pady=5)
 
-    # Source
+        # source
         ctk.CTkLabel(self.params_frame, text="Source :", font=("Arial", 14)).grid(row=0, column=6, padx=5, pady=5)
         self.entree3 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
         self.entree3.grid(row=0, column=7, padx=5, pady=5)
-
-
-        # self.entree1 = ctk.CTkEntry(self, placeholder_text="thème")
-        # self.entree1.grid(row=8, column=0, padx=5, pady=5)
-
-        # self.entree2 = ctk.CTkEntry(self, placeholder_text="base")
-        # self.entree2.grid(row=8, column=1, padx=5, pady=5)
-
-        # self.entree3 = ctk.CTkEntry(self, placeholder_text="source")
-        # self.entree3.grid(row=8, column=2, padx=5, pady=5)
-
-        # self.entree4 = ctk.CTkEntry(self, placeholder_text="année")
-        # self.entree4.grid(row=8, column=3, padx=5, pady=5)
 
         # Actions
         self.process_btn = ctk.CTkButton(self, text="Traiter les données", command=self.process_data)

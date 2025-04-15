@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import pandas as pd
 from tkinter import messagebox
-from script.leaf.catalogue import Catalogue  # On peut réutiliser certaines fonctions back-end
+from script.leaf.catalogue import Catalogue
 
 class CatalogueInterface:
     def __init__(self, livre, parent_window):

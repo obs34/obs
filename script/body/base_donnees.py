@@ -1,9 +1,7 @@
 """Module de gestion de la connexion à la base de données."""
-import getpass
 import psycopg2
 from psycopg2.extensions import connection
-from typing import Optional,Tuple
-from IPython.display import clear_output
+from typing import Optional, Tuple
 
 class ConnectionBaseDeDonnees:
     """Gère la connexion à la base de données PostgreSQL."""

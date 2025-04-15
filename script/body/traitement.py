@@ -2,13 +2,12 @@
 import psycopg2
 import traceback
 
-from ..branch.serialiseur import SerialiseurDeDonnees
-from ..branch.gestion_id import GestionId
-from ..branch.gestion_dossier import GestionDossier
-from ..branch.lecteur_excel_csv import LecteurExcelCsv
-from ..body.livre import Livre
-from ..leaf.futile import *
-
+from script.branch.serialiseur import SerialiseurDeDonnees
+from script.branch.gestion_id import GestionId
+from script.branch.gestion_dossier import GestionDossier
+from script.branch.lecteur_excel_csv import LecteurExcelCsv
+from script.body.livre import Livre
+from script.leaf.futile import *
 
 class Traitement():
     """Gère le traitement des données."""

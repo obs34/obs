@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import Dict, Any, Union
 
-from .gestion_table import CreationTable
+from script.branch.gestion_table import CreationTable
 
 class GestionId:
 

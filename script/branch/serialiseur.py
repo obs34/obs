@@ -1,8 +1,7 @@
 """Module de sérialisation des données."""
-from typing import Dict, List, Any
+from typing import Dict
 import pandas as pd
 import unidecode
-
 
 class SerialiseurDeDonnees:
     """Gère la sérialisation des données."""
