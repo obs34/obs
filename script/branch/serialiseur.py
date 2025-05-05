@@ -1,5 +1,6 @@
 """Module de sérialisation des données."""
 from typing import Dict
+import os
 import pandas as pd
 import unidecode
 
@@ -32,7 +33,7 @@ class SerialiseurDeDonnees:
                 self._clean_string(str(feuille)),
                 feuille,
                 self._clean_string(str(feuille)),
-                None
+                feuille
                 ]
                 ))
             # Ajout de la ligne uniquement si elle n'est pas déjà présente dans la liste
@@ -62,7 +63,7 @@ class SerialiseurDeDonnees:
                               self._clean_string(str(col)),# Nettoyage du nom de la colonne pour uniformisation
                               col, # Nom original de la colonne
                               self._clean_string(str(col)),# Nom nettoyé utilisé à nouveau
-                              None # Valeur par défaut pour une dernière colonne (non spécifiée ici)
+                              col # Valeur de la cellule (nom de la colonne)
                           ]
                     ))
             # Ajout de la ligne uniquement si elle n'est pas déjà présente dans la liste
@@ -122,7 +123,7 @@ class SerialiseurDeDonnees:
                             self.livre.theme,
                             self.livre.source,
                             None,
-                            None
+                            self.livre.file_path, # Répertoire de travail actuel
                             ]))]
         # Conversion de la liste contenant le dictionnaire en un DataFrame pandas
         return pd.DataFrame.from_records(nouvelle_ligne)

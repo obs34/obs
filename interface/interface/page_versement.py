@@ -142,7 +142,7 @@ class AppVersement(ctk.CTkFrame):
 
     # Méthodes existantes inchangées
     def load_and_validate_file(self):
-        self.fichier_excel = self.file_loader.load_excel()
+        self.fichier_excel, self.file_path = self.file_loader.load_excel()
         if not self.fichier_excel:
             self.log_text.insert("end", "Fichier invalide !\n")
             return
@@ -168,8 +168,8 @@ class AppVersement(ctk.CTkFrame):
 
     def process_data(self):
         try:
-            self.livre = Livre(self.conn, schema=self.schema, theme=self.entree1.get(),
-                               base=self.entree2.get(), source=self.entree3.get(), annee=self.entree4.get())
+            self.livre = Livre(self.conn, schema=self.schema, file_path=self.file_path,
+                               theme=self.entree1.get(), base=self.entree2.get(), source=self.entree3.get(), annee=self.entree4.get())
             self.livre.echelle = self.echelle_combobox.get()
             if not self.livre.echelle:
                 self.log_text.insert("end", "Veuillez sélectionner une échelle.\n")

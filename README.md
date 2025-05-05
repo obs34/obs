@@ -8,6 +8,11 @@ cd obs
 python -m interface.interface.application
 ```
 
+## Créer l'exécutable
+```
+pyinstaller --onefile --noconsole --name versement --paths . interface/interface/application.py
+```
+
 ## Logiciels prérequis
 - pgAdmin (Version 4)
 - Anaconda

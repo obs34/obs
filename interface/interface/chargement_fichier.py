@@ -1,4 +1,5 @@
 from tkinter import filedialog, messagebox
+import os
 import pandas as pd
 
 class chargementFichiers:
@@ -9,6 +10,10 @@ class chargementFichiers:
     def load_excel(self):
         file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx;*.xls")])
         if file_path:
+            self.current_repertory = os.path.dirname(file_path)
+            # Change le répertoire de travail à l'endroit du fichier chargé
+            # Cela permet de créer les fichiers CSV dans le même répertoire que le fichier Excel
+            os.chdir(self.current_repertory)
             self.file_label.configure(text=file_path.split("/")[-1])
             try:
                 excel_data = pd.ExcelFile(file_path)
@@ -16,6 +21,6 @@ class chargementFichiers:
                 output = ", ".join([f" {sheet}" for sheet in excel_data.sheet_names])
                 self.sheets_list.delete("0.0", "end")
                 self.sheets_list.insert("0.0", output)
-                return excel_data
+                return excel_data, file_path # Renvoie le chemin du fichier pour le mettre dans url de vers
             except Exception as e:
                 messagebox.showerror("Error", f"Error loading Excel file: {e}")

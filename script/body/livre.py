@@ -3,7 +3,7 @@ from typing import Optional
 
 class Livre:
     '''Classe contenant les informations sur le livre de données.'''
-    def __init__(self, conn, theme: str, base: str, source: str, annee: int, schema: str):
+    def __init__(self, conn, file_path: str, theme: str, base: str, source: str, annee: int, schema: str):
         
         self.sep = ','
         self.encoding = 'utf-8-sig'
@@ -14,7 +14,8 @@ class Livre:
         self.source = source
         self.annee = annee
         self.schema = schema
-
+        self.file_path = file_path
+        
         self.PREFIXE_DOSSIER_TEMPORAIRE = 'traitement_'
         self.colnames_val = ['id_composite', 'id_versement', 'annee', 'echelle', 'code_entite', 'id_var', 'id_mod', 'valeur']
         self.colnames_var = ['id_var', 'nom_var', 'joli_nom_var', 'var_regroupement', 'lib_long_var']

@@ -145,7 +145,8 @@ class Versement:
                     # clear_output(wait=True)
                     print(f"Erreur critique lors du versement dans {nom_table} : {e}")
                     self.db.rollback()  # On rollback seulement si c'est une erreur majeure
-                    return  # Stopper l'exécution
+                    # return  # Stopper l'exécution
+                    raise  # Propage l'erreur pour qu'elle soit capturée ailleurs
 
             self.db.commit()  # Valide les changements uniquement si tout s'est bien passé
 
@@ -154,6 +155,7 @@ class Versement:
             print(f"Erreur globale lors du versement des données : {e}")
             traceback.print_exc()
             self.db.rollback()
-        
+            raise
+
         # Ajout des contraintes après insertion
         self.ajout_contraintes(schema, tables_creees)
