@@ -1,5 +1,13 @@
 # Modernisation de l'ODH
 
+## Lancer l'application de versement
+```
+cd obs
+```
+```
+python -m interface.interface.application
+```
+
 ## Logiciels prérequis
 - pgAdmin (Version 4)
 - Anaconda
