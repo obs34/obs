@@ -4,11 +4,16 @@
 ```
 cd obs
 ```
+puis
 ```
 python -m interface.interface.application
 ```
 
 ## Créer l'exécutable
+```
+cd obs
+```
+puis
 ```
 pyinstaller --onefile --noconsole --name versement --paths . interface/interface/application.py
 ```
