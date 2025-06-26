@@ -1,5 +1,8 @@
 """Module de création de table."""
+import os
 import pandas as pd
+from typing import Dict
+
 
 class CreationTable:
     """Créer les tables si elles n'existent pas."""
@@ -30,16 +33,7 @@ class CreationTable:
         # cursor.close()
         return table_existe
 
-    @staticmethod
-    def recup_contraintes(con) -> list:
-        cursor = con.cursor()
-        cursor.execute("""
-SELECT conname FROM pg_constraint
-        """)
-        contraintes = [contrainte[0] for contrainte in cursor.fetchall()] # .fetchall() renvoie une liste de tuple
-        return contraintes
-
-    def create_table(self, df: pd.DataFrame, schema: str, table: str) -> None:
+    def creer_table(self, df: pd.DataFrame, schema: str, table: str) -> None:
         """
         Crée une table dans la base de données avec ses colonnes, clés primaires et clés étrangères.
 
@@ -66,54 +60,6 @@ SELECT conname FROM pg_constraint
         with self.db.cursor() as cur:
             cur.execute(requete_creation)
 
-    def ajout_contraintes_primaires(self, schema: str, table: str, contraintes: list) -> None:
-        """
-        Ajoute une contrainte de clé primaire à une table, si elle n'existe pas déjà.
-        """
-        cle_primaire = self.livre.relations['primaire'][table]  # Récupère la clé primaire de la table
-        nom_contrainte_primaire = f"{table}_{cle_primaire}_pk"  # Nom de la contrainte
-
-        # Génère la commande SQL pour ajouter la clé primaire
-        contrainte_primaire = (
-            f"ALTER TABLE {schema}.{table} "
-            f"ADD CONSTRAINT {nom_contrainte_primaire} PRIMARY KEY ({cle_primaire});"
-        )
-
-        # Vérifie si la contrainte n'a pas déjà été ajoutée
-        if nom_contrainte_primaire not in contraintes:
-            with self.db.cursor() as cur:
-                cur.execute(contrainte_primaire)
-                contraintes.append(nom_contrainte_primaire)  # Ajoute la contrainte à la liste des contraintes existantes
-            return True
-        return False
-
-
-    def ajout_contraintes_secondaires(self, schema: str, table: str, contraintes: list):
-        """
-        Ajoute des contraintes de clés étrangères à une table, si elles n'existent pas déjà.
-        """
-        contrainte_ajoutee = False
-        # Récupère les clés étrangères associées à la table, si elle est la table principale du livre
-        cles_etrangeres = self.livre.relations['etrangere']
-
-        for table_referente, (cle_etrangere_referente, cle_etrangere_maison) in cles_etrangeres.items():
-            # Nom de la contrainte étrangère
-            nom_contrainte_secondaire = f"{table}_{cle_etrangere_maison}_fk"
-
-            # Génère la commande SQL pour ajouter la clé étrangère
-            contrainte_secondaire = (
-                f"ALTER TABLE {schema}.{table} "
-                f"ADD CONSTRAINT {nom_contrainte_secondaire} "
-                f"FOREIGN KEY ({cle_etrangere_maison}) "
-                f"REFERENCES {schema}.{table_referente} ({cle_etrangere_referente});"
-            )
-            # Vérifie si la contrainte n'a pas déjà été ajoutée
-            if nom_contrainte_secondaire not in contraintes:
-                contrainte_ajoutee = True
-                with self.db.cursor() as cur:
-                    cur.execute(contrainte_secondaire)
-                    contraintes.append(nom_contrainte_secondaire)  # Ajoute la contrainte à la liste des contraintes existantes
-        return contrainte_ajoutee
 
     def map_pandas_to_postgres_type(self, dtype, is_empty=False):
         # Dictionnaire des types Pandas vers PostgreSQL
@@ -135,3 +81,21 @@ SELECT conname FROM pg_constraint
             return postgres_types[dtype_str]
         else:
             raise ValueError(f"Type Pandas non supporté : {dtype}")
+        
+    def creation_table(self, fichiers_csv: Dict[str, pd.DataFrame]) -> list:
+        """
+        Crée les tables dans la base de données si elles n'existent pas déjà.
+
+        Args:
+            nom_tables (list): Liste des noms des tables à créer.
+
+        Returns:
+            list: Liste des tables créées.
+        """
+        tables_creees = []
+        for nom_table, df in fichiers_csv.items():
+            if not self.table_exist(self.db, self.livre.schema, nom_table):
+                self.creer_table(df, self.livre.schema, nom_table)
+                tables_creees.append(nom_table)
+                print(f"Table {nom_table} créée.")
+        return tables_creees

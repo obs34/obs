@@ -37,6 +37,9 @@ class Catalogue:
                 print("""“Choisir le doute comme philosophie de vie c’est comme choisir l’immobilité comme mode de transport.” - Yann Martel """)
         if dictionnaire=='1':
             liste_table = self.liste_table(afficher=False)
+            if not liste_table:
+                print("""Aucune table disponible dans le schéma.""")
+                return
             print("""Liste des tables disponibles :""")
             m = max([len(u) for u in liste_table])
             fibonacci = [0,1,1]
