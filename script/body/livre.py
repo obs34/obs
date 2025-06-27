@@ -45,12 +45,7 @@ class Livre:
             }
         }
 
-    @staticmethod
-    def choix_echelle() -> str:
-        """
-        Choisir l'échelle des données.
-        """
-        echelles = {
+        self.dict_echelle = {
             1: 'commune',
             2: 'epci',
             3: 'iris',
@@ -60,11 +55,19 @@ class Livre:
             7: 'section_cadastrale',
             8: 'canton',
             9: 'odl',
-            10: 'autre'
+            10: 'autre',
+            11: 'automatique'
         }
+
+
+    def choix_echelle(self) -> str:
+        """
+        Choisir l'échelle des données.
+        """
 
         echelle_ok = False
         print("Liste des observatoires disponibles :", flush=True)
+        echelles = self.dict_echelle
         for numero, echelle in echelles.items():
             print(f"{numero} : {echelle}", flush=True)
         clear_output(wait=True)

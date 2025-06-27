@@ -60,7 +60,31 @@ class GestionDonnees():
             print(f"Erreur lors de la lecture du fichier CSV : {e}")
             raise
 
-
+    @staticmethod
+    def code_echelle_auto(code_entite: str) -> str:
+        """
+        Retourne le code d'échelle automatique en fonction du code d'entité.
+        
+        Args:
+            code_entite (str): Code de l'entité
+        
+        Returns:
+            str: Code d'échelle automatique
+        """
+        if not isinstance(int(code_entite), int):
+            raise ValueError(f"Le code_entite '{code_entite}' n'est pas un entier valide. L'échelle automatique ne peut pas être déterminée.")
+        code_entite = str(code_entite).strip()
+        if len(code_entite) == 5:
+            return 'commune'
+        if len(code_entite) == 2:
+            return 'departement'
+        if len(code_entite) == 9 and not code_entite.startswith('34'):
+            return 'epci'
+        if len(code_entite) == 9 and code_entite.startswith('34'):
+            return 'iris'
+        else:
+            raise ValueError(f"Le code_entite '{code_entite}' n'est pas reconnu pour l'échelle automatique. Veuillez vérifier le format du code.")
+    
     def inserer_donnees(self, df: pd.DataFrame, nom_table: str, ignore=False):
         """
         Insère les données du DataFrame dans la table spécifiée.

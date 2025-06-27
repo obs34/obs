@@ -4,6 +4,8 @@ import os
 import pandas as pd
 import unidecode
 
+from script.branch.gestion_donnees import GestionDonnees
+
 class SerialiseurDeDonnees:
     """Gère la sérialisation des données."""
     
@@ -95,7 +97,7 @@ class SerialiseurDeDonnees:
                             [None, 
                              self.livre.id_versement, # Identifiant de versement
                              self.livre.annee, # Année associée aux données
-                             self.livre.echelle, # Échelle géographique des données
+                             self.livre.echelle if self.livre.echelle is not 'automatique' else GestionDonnees.code_echelle_auto(df.loc[index, df.columns[0]]),
                              df.loc[index, df.columns[0]], # Code de l'entité (première colonne du DataFrame)
                              self._clean_string(str(nom_feuille)),# Nom nettoyé de la feuille
                              self._clean_string(str(col)), # Nom nettoyé de la colonne
@@ -103,7 +105,7 @@ class SerialiseurDeDonnees:
                     lignes.append(nouvelle_ligne)
         return pd.DataFrame.from_records(lignes)
 
-    def serialize_versement(self) -> pd.DataFrame:
+    def serialize_versement(self, sheets_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
         """
         Sérialise les métadonnées relatives à un versement de données
         
@@ -119,7 +121,8 @@ class SerialiseurDeDonnees:
                             self.livre.id_versement,
                             self.livre.nom_table,
                             self.livre.annee,
-                            self.livre.echelle, # La colonne 0 est code_entité.
+                            self.livre.echelle if self.livre.echelle is not 'automatique' else ', '.join(set([GestionDonnees.code_echelle_auto(code) for feuille in sheets_data.values() for code in feuille[feuille.columns[0]]])), # Échelle géographique des données
+                            self.livre.theme, 
                             self.livre.theme,
                             self.livre.source,
                             None,
@@ -183,7 +186,7 @@ class SerialiseurDeDonnees:
         liste_colonnes_sans_code = [col for df in sheets_data.values() for col in df.columns[1:]]
         df_mod = self.serialize_modalites(liste_colonnes_sans_code)
         df_val = self.serialize_valeurs(sheets_data)
-        df_vers = self.serialize_versement()
+        df_vers = self.serialize_versement(sheets_data)
 
         return {
                 self.livre.nom_table_var: df_var,
