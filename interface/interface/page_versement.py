@@ -21,7 +21,7 @@ class AppVersement(ctk.CTkFrame):
         self.conn = None
         self.schema = None
         self.fichier_excel = None
-        self.livre = None
+        # self.livre = Livre(conn=None,file_path=None, theme=None, base=None, source=None, annee=None, schema=None)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(14, weight=3)
@@ -69,19 +69,23 @@ class AppVersement(ctk.CTkFrame):
         self.obs_frame = ctk.CTkFrame(self)
         self.obs_frame.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
         ctk.CTkLabel(self.obs_frame, text="Sélectionnez une échelle :", font=("Arial", 14)).pack(side="left", padx=5)
+
+        # self.echelles = self.livre.dict_echelle if hasattr(self.livre, 'dict_echelle') else {
         self.echelles = {
-            'commune': 'commune',
-            'epci': 'epci',
-            'iris': 'iris',
-            'departement': 'departement',
-            'parcelle': 'parcelle',
-            'logement': 'logement',
-            'section_cadastrale': 'section_cadastrale',
-            'canton': 'canton',
-            'odl': 'odl',
-            'autre': 'autre'
+            1: 'commune',
+            2: 'epci',
+            3: 'iris',
+            4: 'departement',
+            5: 'parcelle',
+            6: 'logement',
+            7: 'section_cadastrale',
+            8: 'canton',
+            9: 'odl',
+            100: 'autre',
+            1000: 'automatique'
         }
-        self.echelle_combobox = ctk.CTkComboBox(self.obs_frame, values=list(self.echelles.keys()), font=("Arial", 14))
+
+        self.echelle_combobox = ctk.CTkComboBox(self.obs_frame, values=list(self.echelles.values()), font=("Arial", 14))
         self.echelle_combobox.pack(side="left", padx=5)
 
         self.params_frame = ctk.CTkFrame(self)

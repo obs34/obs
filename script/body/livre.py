@@ -55,8 +55,8 @@ class Livre:
             7: 'section_cadastrale',
             8: 'canton',
             9: 'odl',
-            10: 'autre',
-            11: 'automatique'
+            100: 'autre',
+            1000: 'automatique'
         }
 
 

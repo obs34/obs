@@ -97,7 +97,7 @@ class SerialiseurDeDonnees:
                             [None, 
                              self.livre.id_versement, # Identifiant de versement
                              self.livre.annee, # Année associée aux données
-                             self.livre.echelle if self.livre.echelle is not 'automatique' else GestionDonnees.code_echelle_auto(df.loc[index, df.columns[0]]),
+                             self.livre.echelle if self.livre.echelle != 'automatique' else GestionDonnees.code_echelle_auto(df.loc[index, df.columns[0]]),
                              df.loc[index, df.columns[0]], # Code de l'entité (première colonne du DataFrame)
                              self._clean_string(str(nom_feuille)),# Nom nettoyé de la feuille
                              self._clean_string(str(col)), # Nom nettoyé de la colonne
@@ -121,7 +121,7 @@ class SerialiseurDeDonnees:
                             self.livre.id_versement,
                             self.livre.nom_table,
                             self.livre.annee,
-                            self.livre.echelle if self.livre.echelle is not 'automatique' else ', '.join(set([GestionDonnees.code_echelle_auto(code) for feuille in sheets_data.values() for code in feuille[feuille.columns[0]]])), # Échelle géographique des données
+                            self.livre.echelle if self.livre.echelle != 'automatique' else ', '.join(set([GestionDonnees.code_echelle_auto(code) for feuille in sheets_data.values() for code in feuille[feuille.columns[0]]])), # Échelle géographique des données
                             self.livre.theme, 
                             self.livre.theme,
                             self.livre.source,

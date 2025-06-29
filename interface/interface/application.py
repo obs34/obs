@@ -6,7 +6,7 @@ class Application(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Mon Application")
+        self.title("Application de versement")
         self.geometry("900x600")
 
         # Configuration du conteneur principal
