@@ -122,7 +122,6 @@ class SerialiseurDeDonnees:
                             self.livre.nom_table,
                             self.livre.annee,
                             self.livre.echelle if self.livre.echelle != 'automatique' else ', '.join(set([GestionDonnees.code_echelle_auto(code) for feuille in sheets_data.values() for code in feuille[feuille.columns[0]]])), # Échelle géographique des données
-                            self.livre.theme, 
                             self.livre.theme,
                             self.livre.source,
                             None,

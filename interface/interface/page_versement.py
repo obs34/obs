@@ -112,37 +112,53 @@ class AppVersement(ctk.CTkFrame):
         self.entree3.grid(row=0, column=7, padx=5, pady=5)
 
         # Actions
+        # Traitement
         self.process_btn = ctk.CTkButton(self, text="Traiter les données", command=self.process_data)
         self.process_btn.grid(row=9, column=0, padx=12, pady=5)
 
+        # Type de la colonne valeur
+        # Encapsuler dans un frame
+        self.type_frame = ctk.CTkFrame(self)
+        self.type_frame.grid(row=10, column=0, padx=12, pady=(5, 0), sticky="w")
+
+        # Label à gauche
+        self.type_label = ctk.CTkLabel(self.type_frame, text="Type de données :", font=("Arial", 14))
+        self.type_label.pack(side="left", padx=(0, 10))
+
+        # Bouton segmenté ou menu déroulant à droite
+        self.data_type_var = ctk.StringVar(value="numérique")
+        self.data_type_segment = ctk.CTkSegmentedButton(self.type_frame, values=["numérique", "caractère"], variable=self.data_type_var)
+        self.data_type_segment.pack(side="left")
+
+        # Versement
         self.versement_btn = ctk.CTkButton(self, text="Verser les données", command=self.perform_versement)
-        self.versement_btn.grid(row=10, column=0, padx=12, pady=5)
+        self.versement_btn.grid(row=10+1, column=0, padx=12, pady=5)
 
         self.cleanup_btn = ctk.CTkButton(self, text="Nettoyer", command=self.cleanup)
-        self.cleanup_btn.grid(row=11, column=0, padx=12, pady=5)
+        self.cleanup_btn.grid(row=11+1, column=0, padx=12, pady=5)
 
         # Liste des fichiers CSV disponibles
         self.csv_files_combobox = ctk.CTkComboBox(self, values=[], font=("Arial", 14))
-        self.csv_files_combobox.grid(row=12, column=0, padx=12, pady=5, sticky="ew")
+        self.csv_files_combobox.grid(row=12+1, column=0, padx=12, pady=5, sticky="ew")
         self.csv_files_combobox.set("Appuyer sur le bouton 'Charger les CSV'")
 
         # Bouton pour charger les fichiers CSV
         self.load_csv_btn = ctk.CTkButton(self, text="Charger les CSV", command=self.load_csv_files)
-        self.load_csv_btn.grid(row=13, column=0, padx=12)
+        self.load_csv_btn.grid(row=13+1, column=0, padx=12)
 
         # Bouton pour ouvrir et éditer le CSV sélectionné
         self.edit_csv_btn = ctk.CTkButton(self, text="Éditer CSV sélectionné", command=self.edit_selected_csv)
-        self.edit_csv_btn.grid(row=14, column=0)
+        self.edit_csv_btn.grid(row=14+1, column=0)
 
         # Zone des logs
         self.log_text = ctk.CTkTextbox(self, height=10)
-        self.log_text.grid(row=15, column=0, sticky="nsew")
+        self.log_text.grid(row=15+1, column=0, sticky="nsew")
 
         # Permettre à la colonne 0 de s'étendre
         self.grid_columnconfigure(0, weight=1)
 
         # Permettre à la ligne 15 (logs) de s'étendre
-        self.grid_rowconfigure(15, weight=1)
+        self.grid_rowconfigure(15+1, weight=1)
 
     # Méthodes existantes inchangées
     def load_and_validate_file(self):
@@ -185,6 +201,13 @@ class AppVersement(ctk.CTkFrame):
 
     def perform_versement(self):
         try:
+            type_selectionne = self.data_type_var.get()
+            if type_selectionne == "numérique":
+                # faire quelque chose
+                pass
+            else:
+                # autre traitement
+                pass
             Versement(self.conn, self.livre).versement()
             self.log_text.insert("end", "Versement terminé !\n")
         except Exception as e:
