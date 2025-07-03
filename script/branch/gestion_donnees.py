@@ -54,7 +54,7 @@ class GestionDonnees():
         try:
             # nom : os.path.basename(fichier).split('.')[0]
             # df : pd.read_csv(fichier, sep=self.livre.sep, encoding=self.livre.encoding)
-            return {os.path.basename(fichier).split('.')[0]: pd.read_csv(fichier, sep=self.livre.sep, encoding=self.livre.encoding)
+            return {os.path.basename(fichier).split('.')[0]: pd.read_csv(fichier, sep=self.livre.sep, encoding=self.livre.encoding, decimal='.')
                     for fichier in fichiers_csv}
         except Exception as e:
             print(f"Erreur lors de la lecture du fichier CSV : {e}")

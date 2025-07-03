@@ -30,6 +30,7 @@ class Livre:
 
         self.echelle: Optional[str] = None
         self.id_versement: Optional[int] = None
+        self.data_type_val = 'NUMERIC(38, 8)'  # Type de données pour la colonne valeur
 
         self.relations = {
             'primaire': {

@@ -126,9 +126,9 @@ class AppVersement(ctk.CTkFrame):
         self.type_label.pack(side="left", padx=(0, 10))
 
         # Bouton segmenté ou menu déroulant à droite
-        self.data_type_var = ctk.StringVar(value="numérique")
-        self.data_type_segment = ctk.CTkSegmentedButton(self.type_frame, values=["numérique", "caractère"], variable=self.data_type_var)
-        self.data_type_segment.pack(side="left")
+        self.data_type_val = ctk.StringVar(value="numérique")
+        self.data_type_val = ctk.CTkSegmentedButton(self.type_frame, values=["numérique", "caractère"], variable=self.data_type_val)
+        self.data_type_val.pack(side="left")
 
         # Versement
         self.versement_btn = ctk.CTkButton(self, text="Verser les données", command=self.perform_versement)
@@ -188,7 +188,7 @@ class AppVersement(ctk.CTkFrame):
 
     def process_data(self):
         try:
-            self.livre = Livre(self.conn, schema=self.schema, file_path=self.file_path,
+            self.livre = Livre(conn=self.conn, schema=self.schema, file_path=self.file_path,
                                theme=self.entree1.get(), base=self.entree2.get(), source=self.entree3.get(), annee=self.entree4.get())
             self.livre.echelle = self.echelle_combobox.get()
             if not self.livre.echelle:
@@ -201,13 +201,8 @@ class AppVersement(ctk.CTkFrame):
 
     def perform_versement(self):
         try:
-            type_selectionne = self.data_type_var.get()
-            if type_selectionne == "numérique":
-                # faire quelque chose
-                pass
-            else:
-                # autre traitement
-                pass
+            print(f"Type de données pour la colonne valeur : {self.data_type_val.get()}")
+            self.livre.data_type_val = self.data_type_val.get()  # Mettre à jour le type de données dans le livre
             Versement(self.conn, self.livre).versement()
             self.log_text.insert("end", "Versement terminé !\n")
         except Exception as e:

@@ -49,6 +49,8 @@ class CreationTable:
         list_empty = [df[col].isnull().all() for col in df.columns]
         colonnes_types = [
             f"{col} {self.map_pandas_to_postgres_type(df[col].dtype, is_empty=is_empty)}"
+            if col != self.livre.colnames_val[-1]  # valeur
+            else f"{col} {self.map_pandas_to_postgres_type(self.livre.data_type_val)}" 
             for col, is_empty in zip(df.columns, list_empty)
         ]
 
@@ -69,7 +71,10 @@ class CreationTable:
             'object': 'VARCHAR(8000)',
             'O': 'VARCHAR(8000)',
             'bool': 'BOOLEAN',
-            'datetime64[ns]': 'TIMESTAMP'
+            'datetime64[ns]': 'TIMESTAMP',
+            # Sorties du bouton segmenté de l'interface
+            'numérique': 'NUMERIC(38, 8)',
+            'caractère': 'VARCHAR(8000)'
         }
         # Si la colonne est entièrement vide, on retourne un type générique VARCHAR
         if is_empty:
