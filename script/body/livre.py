@@ -55,7 +55,8 @@ class Livre:
             6: 'logement',
             7: 'section_cadastrale',
             8: 'canton',
-            9: 'odl',
+            9: 'zonage_odl',
+            10: 'zonage_social_odl',
             100: 'autre',
             1000: 'automatique'
         }
@@ -77,11 +78,11 @@ class Livre:
             echelle_numero = input("Veuillez choisir l'échelle correspondant à l'échelle de vos données :")
             try:
                 echelle_int = int(echelle_numero)
-                if echelle_int in echelles and echelle_int != 10:
+                if echelle_int in echelles and echelle_int != 100:
                     echelle = echelles[echelle_int]
                     print(f"Vous avez choisi l'échelle {echelle}.")
                     echelle_ok = True
-                elif echelle_int == 10:
+                elif echelle_int == 100:
                     echelle = input("Veuillez saisir l'échelle correspondant à l'échelle de vos données :")
                     print(f"Vous avez choisi l'échelle {echelle}.")
                     echelle_ok = True

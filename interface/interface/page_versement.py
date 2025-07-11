@@ -80,7 +80,8 @@ class AppVersement(ctk.CTkFrame):
             6: 'logement',
             7: 'section_cadastrale',
             8: 'canton',
-            9: 'odl',
+            9: 'zonage_odl',
+            10: 'zonage_social_odl',
             100: 'autre',
             1000: 'automatique'
         }

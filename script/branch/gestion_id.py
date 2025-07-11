@@ -64,7 +64,8 @@ class GestionId:
 
     def ajout_id_composite(self, processed_data: Dict[str, pd.DataFrame]):
         df = processed_data[self.livre.nom_table]
-        df[self.livre.colnames_val[0]] = df[self.livre.colnames_val[2:7]].astype(str).sum(axis=1)
+        # df[self.livre.colnames_val[0]] = df[self.livre.colnames_val[2:7]].astype(str).sum(axis=1)
+        df[self.livre.colnames_val[0]] = df[self.livre.colnames_val[2:5]].astype(str).sum(axis=1) + df[self.livre.colnames_val[5]].astype(str) + '_' + df[self.livre.colnames_val[6]].astype(str)
         return processed_data
 
     def trouve_id_versement(self) -> int:
