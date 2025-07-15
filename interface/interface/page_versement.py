@@ -24,7 +24,7 @@ class AppVersement(ctk.CTkFrame):
         # self.livre = Livre(conn=None,file_path=None, theme=None, base=None, source=None, annee=None, schema=None)
 
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(14, weight=3)
+        self.grid_rowconfigure(15, weight=1)  # Ligne des logs pour qu'elle s'étende
 
         self.create_widgets()
 
@@ -34,20 +34,20 @@ class AppVersement(ctk.CTkFrame):
             self, text="Catalogue",
             command=lambda: self.app.show_page("AppCatalogue")  # Navigation corrigée
         )
-        self.btn_catalogue.grid(row=1, column=0, padx=10, pady=10)
+        self.btn_catalogue.grid(row=0, column=0, padx=10, pady=10)
 
         # Sélection de fichier
         self.file_label = ctk.CTkLabel(self, text="Aucun fichier sélectionné")
-        self.file_label.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
+        self.file_label.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
         self.sheets_list = ctk.CTkTextbox(self, height=5)
-        self.sheets_list.grid(row=3, column=0, padx=10, pady=5, sticky="ew")
+        self.sheets_list.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
         self.file_loader = chargementFichiers(self.file_label, self.sheets_list)
         self.load_btn = ctk.CTkButton(self, text="Charger un fichier", command=self.load_and_validate_file)
-        self.load_btn.grid(row=4, column=0, padx=10, pady=5)
+        self.load_btn.grid(row=3, column=0, padx=10, pady=5)
 
         # Sélection de l'observatoire
         self.obs_frame = ctk.CTkFrame(self)
-        self.obs_frame.grid(row=5, column=0, padx=20, pady=10, sticky="ew")
+        self.obs_frame.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
         ctk.CTkLabel(self.obs_frame, text="Sélectionnez un Observatoire :", font=("Arial", 14)).pack(side="left", padx=5)
         self.observatoires = {
             "l'ODH dans bdsociohab": "1",
@@ -62,15 +62,13 @@ class AppVersement(ctk.CTkFrame):
 
         # Connexion DB
         self.db_btn = ctk.CTkButton(self, text="Connexion à PostgreSQL", command=self.connect_to_db)
-        self.db_btn.grid(row=6, column=0, padx=12, pady=5)
+        self.db_btn.grid(row=5, column=0, padx=12, pady=5)
 
-        # # Champs de saisie
         # Sélection de l'échelle
-        self.obs_frame = ctk.CTkFrame(self)
-        self.obs_frame.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
-        ctk.CTkLabel(self.obs_frame, text="Sélectionnez une échelle :", font=("Arial", 14)).pack(side="left", padx=5)
+        self.echelle_frame = ctk.CTkFrame(self)
+        self.echelle_frame.grid(row=6, column=0, padx=20, pady=10, sticky="ew")
+        ctk.CTkLabel(self.echelle_frame, text="Sélectionnez une échelle :", font=("Arial", 14)).pack(side="left", padx=5)
 
-        # self.echelles = self.livre.dict_echelle if hasattr(self.livre, 'dict_echelle') else {
         self.echelles = {
             1: 'commune',
             2: 'epci',
@@ -86,11 +84,12 @@ class AppVersement(ctk.CTkFrame):
             1000: 'automatique'
         }
 
-        self.echelle_combobox = ctk.CTkComboBox(self.obs_frame, values=list(self.echelles.values()), font=("Arial", 14))
+        self.echelle_combobox = ctk.CTkComboBox(self.echelle_frame, values=list(self.echelles.values()), font=("Arial", 14))
         self.echelle_combobox.pack(side="left", padx=5)
 
+        # Champs de saisie
         self.params_frame = ctk.CTkFrame(self)
-        self.params_frame.grid(row=8, column=0, padx=20, pady=10, sticky="ew")
+        self.params_frame.grid(row=7, column=0, padx=20, pady=10, sticky="ew")
 
         # année
         ctk.CTkLabel(self.params_frame, text="Année :", font=("Arial", 14)).grid(row=0, column=0, padx=5, pady=5)
@@ -112,15 +111,13 @@ class AppVersement(ctk.CTkFrame):
         self.entree3 = ctk.CTkEntry(self.params_frame, font=("Arial", 14), width=100)
         self.entree3.grid(row=0, column=7, padx=5, pady=5)
 
-        # Actions
         # Traitement
         self.process_btn = ctk.CTkButton(self, text="Traiter les données", command=self.process_data)
-        self.process_btn.grid(row=9, column=0, padx=12, pady=5)
+        self.process_btn.grid(row=8, column=0, padx=12, pady=5)
 
         # Type de la colonne valeur
-        # Encapsuler dans un frame
         self.type_frame = ctk.CTkFrame(self)
-        self.type_frame.grid(row=10, column=0, padx=12, pady=(5, 0), sticky="w")
+        self.type_frame.grid(row=9, column=0, padx=12, pady=(5, 0), sticky="w")
 
         # Label à gauche
         self.type_label = ctk.CTkLabel(self.type_frame, text="Type de données :", font=("Arial", 14))
@@ -133,33 +130,31 @@ class AppVersement(ctk.CTkFrame):
 
         # Versement
         self.versement_btn = ctk.CTkButton(self, text="Verser les données", command=self.perform_versement)
-        self.versement_btn.grid(row=10+1, column=0, padx=12, pady=5)
+        self.versement_btn.grid(row=10, column=0, padx=12, pady=5)
 
+        # Nettoyage
         self.cleanup_btn = ctk.CTkButton(self, text="Nettoyer", command=self.cleanup)
-        self.cleanup_btn.grid(row=11+1, column=0, padx=12, pady=5)
+        self.cleanup_btn.grid(row=11, column=0, padx=12, pady=5)
 
         # Liste des fichiers CSV disponibles
         self.csv_files_combobox = ctk.CTkComboBox(self, values=[], font=("Arial", 14))
-        self.csv_files_combobox.grid(row=12+1, column=0, padx=12, pady=5, sticky="ew")
+        self.csv_files_combobox.grid(row=12, column=0, padx=12, pady=5, sticky="ew")
         self.csv_files_combobox.set("Appuyer sur le bouton 'Charger les CSV'")
 
         # Bouton pour charger les fichiers CSV
         self.load_csv_btn = ctk.CTkButton(self, text="Charger les CSV", command=self.load_csv_files)
-        self.load_csv_btn.grid(row=13+1, column=0, padx=12)
+        self.load_csv_btn.grid(row=13, column=0, padx=12, pady=5)
 
         # Bouton pour ouvrir et éditer le CSV sélectionné
         self.edit_csv_btn = ctk.CTkButton(self, text="Éditer CSV sélectionné", command=self.edit_selected_csv)
-        self.edit_csv_btn.grid(row=14+1, column=0)
+        self.edit_csv_btn.grid(row=14, column=0, padx=12, pady=5)
 
-        # Zone des logs
-        self.log_text = ctk.CTkTextbox(self, height=10)
-        self.log_text.grid(row=15+1, column=0, sticky="nsew")
+        # Zone des logs - prend tout l'espace restant
+        self.log_text = ctk.CTkTextbox(self, height=150)
+        self.log_text.grid(row=15, column=0, padx=12, pady=10, sticky="nsew")
 
         # Permettre à la colonne 0 de s'étendre
         self.grid_columnconfigure(0, weight=1)
-
-        # Permettre à la ligne 15 (logs) de s'étendre
-        self.grid_rowconfigure(15+1, weight=1)
 
     # Méthodes existantes inchangées
     def load_and_validate_file(self):
@@ -255,4 +250,3 @@ class AppVersement(ctk.CTkFrame):
 
         btn_save = ctk.CTkButton(popup, text="Sauvegarder", command=sauvegarder_csv)
         btn_save.pack(pady=10)
-
