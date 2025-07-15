@@ -50,7 +50,7 @@ class CreationTable:
         colonnes_types = [
             f"{col} {self.map_pandas_to_postgres_type(df[col].dtype, is_empty=is_empty)}"
             if col != self.livre.colnames_val[-1]  # valeur
-            else f"{col} {self.livre.data_type_val}" 
+            else f"{col} {self.map_pandas_to_postgres_type(self.livre.data_type_val)}" 
             for col, is_empty in zip(df.columns, list_empty)
         ]
 
