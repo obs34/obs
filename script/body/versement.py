@@ -15,7 +15,7 @@ class Versement:
     def __init__(self, db_connection, livre):
         """
         Initialise le verseur de données.
-        
+
         Args:
             db_connection: Connexion à la base de données
             livre: Objet contenant les informations nécessaires
